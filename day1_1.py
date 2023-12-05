@@ -1,6 +1,6 @@
 import re
 
-input = open('day1_1.txt', 'r')
+input = open('test.txt', 'r')
 lines = input.readlines()
 
 calibration = 0
@@ -35,14 +35,31 @@ regexes = [ [one, one_digit],
             [eight, eight_digit],
             [nine, nine_digit] ]
 
-first = 0
-last = 0
+calibration = 0
 
 for line in lines:
+    first = 0
+    last = 0
+    min_index = 10000
+    max_index = 0
+
     for (index, regex) in enumerate(regexes):
         for x in regex:
-            start = 0
-            match =  x.match(line)
+            match = x.search(line)
+            if match == None:
+                continue
+            print(match.span())
+            if match.span()[0] < min_index:
+                min_index = match.span()[0]
+                first = index + 1
+            if match.span()[0] > max_index:
+                max_index = match.span()[0]
+                last = index + 1
+    calibration += first*10 + last
+
+    print(f"line cal: {first*10 + last} for line: {line}")
+
+print(f"calibration is {calibration}")
 
 
         
