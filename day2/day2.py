@@ -26,18 +26,17 @@
 
 import re
 
-# Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
-
-input = open('day2/day2_0.txt', 'r')
+input = open('day2/day2_1.txt', 'r')
 games = input.readlines()
 
 actualRed = 12
 actualGreen = 13
 actualBlue = 14
 
-for game in games:
+sumGames = 0
+sumPower = 0
 
-    gameIsPossible = False
+for game in games:
 
     gameInfo = game.split(':')
 
@@ -53,21 +52,37 @@ for game in games:
     findGreen = re.compile(r'[0-9]* green')
     findBlue = re.compile(r'[0-9]* blue')
 
+    maxRed = 0
+    maxBlue = 0
+    maxGreen = 0
+
     for roll in rolls:
 
         red = findRed.findall(roll)
-        if red != None:
+        if len(red) > 0:
             redString = red[0]
             redInt = int(redString.split(' ')[0])
+            if redInt > maxRed:
+                maxRed = redInt
 
         blue = findBlue.findall(roll)
-        if blue != None:
+        if len(blue) > 0:
             blueString = blue[0]
             blueInt = int(blueString.split(' ')[0])       
+            if blueInt > maxBlue:
+                maxBlue = blueInt
 
         green = findGreen.findall(roll)
-        if green != None:
+        if len(green) > 0:
             greenString = green[0]
             greenInt = int(greenString.split(' ')[0])  
+            if greenInt > maxGreen:
+                maxGreen = greenInt
 
+    if (maxGreen <= actualGreen and maxBlue <= actualBlue and maxRed <= actualRed):
+        sumGames += gameID
 
+    sumPower += maxBlue * maxGreen * maxRed
+
+print(f"sum of possible games: {sumGames}")
+print(f"sum of game power: {sumPower}")
