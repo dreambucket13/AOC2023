@@ -44,11 +44,13 @@ def getGearRatio(numArray, row, column):
                 continue
 
             if numArray[rowToCheck][columnToCheck] != '0':
-
+                #this is gonna double count.  
                 if gearOne == 0:
                     gearOne = int(numArray[rowToCheck][columnToCheck])
                 elif gearTwo == 0:
                     gearTwo = int(numArray[rowToCheck][columnToCheck])
+    
+    print(f'Gear one: {gearOne}, Gear two: {gearTwo}')
             
     return gearOne * gearTwo
     
