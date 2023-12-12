@@ -6,6 +6,15 @@ class State(Enum):
     LOOKING_FOR_START_OF_NUMBER = 1
     LOOKING_FOR_END_OF_NUMBER = 2
 
+class Part:
+    id = 0
+    def __init__(self, value):
+        self.value = value
+        Part.id += 1
+    def getID(self):
+        return Part.id
+
+
 def symbolInRange(schematic, lineNum, charNum):
 
     symbols = ('*', "#", '/', '$', '=', '%', '@', '+', '&', '-')
@@ -55,7 +64,7 @@ def getGearRatio(numArray, row, column):
     return gearOne * gearTwo
     
 
-input = open('day3/day3_1.txt', 'r')
+input = open('day3/day3_0.txt', 'r')
 schematic = input.readlines()
 
 rows = len(schematic) 
@@ -98,9 +107,10 @@ for (lineNum, line) in enumerate(schematic):
                 numEnd = index
 
             if not char.isdigit() or index == 0:
-                # log the num in a 2D array
+                # log the part ID in a 2D array
+                newPart = Part(num)
                 for i in range(numEnd, numStart + 1):
-                    numArray[lineNum][i] = num
+                    numArray[lineNum][i] = newPart.getID()
 
                 if isPartNumber == True:
                     sumParts += num
@@ -114,8 +124,8 @@ for (lineNum, line) in enumerate(schematic):
 
 print(f'Sum of parts is {sumParts}')
 
-# for j in range(0, rows):
-#     print(f'{numArray[j]}, length: {len(numArray[j])}')
+for j in range(0, rows):
+    print(f'{numArray[j]}, length: {len(numArray[j])}')
 
 gearRatio = 0
 
