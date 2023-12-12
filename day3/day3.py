@@ -28,10 +28,16 @@ def symbolInRange(schematic, lineNum, charNum):
 def isGear(schematic, lineNum, charNum):
     pass
 
-
-
-input = open('day3/day3_1.txt', 'r')
+input = open('day3/day3_0.txt', 'r')
 schematic = input.readlines()
+
+rows = len(schematic) 
+cols = len(schematic[0]) - 1 # don't count the /n
+
+numArray = [[0 for col in range(cols)] for row in range(rows)]
+
+#numArray is [row][col]
+
 
 sumParts = 0
 
@@ -40,15 +46,18 @@ for (lineNum, line) in enumerate(schematic):
     state = State.LOOKING_FOR_START_OF_NUMBER
     isPartNumber = False
 
-    index = len(line) - 2
+    index = len(line) - 2 # don't count the /n
     num = 0
     exponent = 0
+    numStart = 0
+    numEnd = 0
 
     while index >= 0:
         char = line[index]
         if state == State.LOOKING_FOR_START_OF_NUMBER:
             if char.isdigit():
                 state = State.LOOKING_FOR_END_OF_NUMBER
+                numStart = index
 
         if state == State.LOOKING_FOR_END_OF_NUMBER:
             if char.isdigit():
@@ -56,8 +65,13 @@ for (lineNum, line) in enumerate(schematic):
                 exponent += 1
                 if symbolInRange(schematic, lineNum, index):
                     isPartNumber = True
+                numEnd = index
 
             if not char.isdigit() or index == 0:
+                # log the num in a 2D array
+                for i in range(numEnd, numStart + 1):
+                    numArray[lineNum][i] = num
+
                 if isPartNumber == True:
                     sumParts += num
                     print(f'num: {num}')
@@ -69,3 +83,6 @@ for (lineNum, line) in enumerate(schematic):
         index -= 1
 
 print(f'Sum of parts is {sumParts}')
+
+for j in range(0, rows):
+    print(f'{numArray[j]}, length: {len(numArray[j])}')
