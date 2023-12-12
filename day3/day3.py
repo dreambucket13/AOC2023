@@ -6,11 +6,18 @@ class State(Enum):
     LOOKING_FOR_START_OF_NUMBER = 1
     LOOKING_FOR_END_OF_NUMBER = 2
 
+class PossibleGear:
+    def __init__(self, num, location):
+        self.num = num
+        self.location = location
+
 def symbolInRange(schematic, lineNum, charNum):
 
     symbols = ('*', "#", '/', '$', '=', '%', '@', '+', '&', '-')
     lineOffsets = (-1, 0, 1)
     charOffsets = (-1, 0, 1)
+    possibleGear = False
+    symbolLocation = (None,None)
 
     for lineOffset in lineOffsets:
         for charOffset in charOffsets:
@@ -21,24 +28,31 @@ def symbolInRange(schematic, lineNum, charNum):
                 continue
 
             if schematic[lineToCheck][charToCheck] in symbols:
-                return True
+                if schematic[lineToCheck][charToCheck] == '*':
+                    possibleGear = True
+                    symbolLocation = (charToCheck, lineToCheck)
+                return True, possibleGear, symbolLocation
             
-    return False
+    return False, possibleGear, symbolLocation
 
 def isGear(schematic, lineNum, charNum):
     pass
 
 
 
-input = open('day3/day3_1.txt', 'r')
+input = open('day3/day3_0.txt', 'r')
 schematic = input.readlines()
 
 sumParts = 0
+gears = []
 
 for (lineNum, line) in enumerate(schematic):
 
     state = State.LOOKING_FOR_START_OF_NUMBER
     isPartNumber = False
+    isPossibleGear = False
+    gearLocation = (None, None)
+
 
     index = len(line) - 2
     num = 0
@@ -54,13 +68,20 @@ for (lineNum, line) in enumerate(schematic):
             if char.isdigit():
                 num += (int(char)*pow(10, exponent))
                 exponent += 1
-                if symbolInRange(schematic, lineNum, index):
-                    isPartNumber = True
+                partData = symbolInRange(schematic, lineNum, index)
+                isPartNumber = partData[0]
+                isPossibleGear = partData[1]
+                gearLocation = partData[2]
 
             if not char.isdigit() or index == 0:
                 if isPartNumber == True:
                     sumParts += num
-                    print(f'num: {num}')
+                    print(f'num: {num}')   
+
+                if isPossibleGear == True:
+                    possibleGear = PossibleGear(num, gearLocation)
+                    gears.append(possibleGear)
+
                 num = 0
                 exponent = 0
                 state = state = State.LOOKING_FOR_START_OF_NUMBER
