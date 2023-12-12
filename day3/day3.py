@@ -1,6 +1,5 @@
 # https://adventofcode.com/2023/day/3
 
-import re
 from enum import Enum
 
 class State(Enum):
