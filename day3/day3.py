@@ -7,12 +7,13 @@ class State(Enum):
     LOOKING_FOR_END_OF_NUMBER = 2
 
 class Part:
-    id = 0
+    nextId = 1
     def __init__(self, value):
         self.value = value
-        Part.id += 1
+        self.partID = Part.nextId
+        Part.nextId += 1
     def getID(self):
-        return Part.id
+        return self.partID
 
 
 def symbolInRange(schematic, lineNum, charNum):
@@ -38,8 +39,10 @@ def getGearRatio(numArray, row, column):
 
     rowOffsets = (-1, 0, 1)
     columnOffsets = (-1, 0, 1)
-    gearOne = 0
-    gearTwo = 0
+    gearOneID = 0
+    gearOneValue = 0
+    gearTwoID = 0
+    gearTwoValue = 0
 
     for rowOffset in rowOffsets:
         for columnOffset in columnOffsets:
@@ -49,28 +52,31 @@ def getGearRatio(numArray, row, column):
             if rowOffset == 0 and columnOffset == 0:
                 continue
 
-            if rowToCheck < 0 or rowToCheck >= len(numArray) or columnToCheck < 0 or columnToCheck > len(numArray[rowToCheck]):
+            if rowToCheck < 0 or rowToCheck >= len(numArray) or columnToCheck < 0 or columnToCheck > len(numArray[row]):
                 continue
-
-            if numArray[rowToCheck][columnToCheck] != '0':
-                #this is gonna double count.  
-                if gearOne == 0:
-                    gearOne = int(numArray[rowToCheck][columnToCheck])
-                elif gearTwo == 0:
-                    gearTwo = int(numArray[rowToCheck][columnToCheck])
-    
-    print(f'Gear one: {gearOne}, Gear two: {gearTwo}')
             
-    return gearOne * gearTwo
+            checkedSlot = numArray[rowToCheck][columnToCheck]
+            if checkedSlot != None:
+
+                if gearOneID == 0:
+                    gearOneID = checkedSlot.getID()
+                    gearOneValue = int(checkedSlot.value)
+                elif gearTwoID == 0 and checkedSlot.getID() != gearOneID:
+                    gearTwoID = checkedSlot.getID()
+                    gearTwoValue = int(checkedSlot.value)
+
+    # print(f'Gear one: {gearOneValue}, Gear two: {gearTwoValue}')
+            
+    return gearOneValue * gearTwoValue
     
 
-input = open('day3/day3_0.txt', 'r')
+input = open('day3/day3_1.txt', 'r')
 schematic = input.readlines()
 
 rows = len(schematic) 
 cols = len(schematic[0]) - 1 # don't count the /n
 
-numArray = [[0 for col in range(cols)] for row in range(rows)]
+numArray = [[None for col in range(cols)] for row in range(rows)]
 
 #numArray is [row][col]
 
@@ -90,13 +96,14 @@ for (lineNum, line) in enumerate(schematic):
 
     while index >= 0:
         char = line[index]
+        # for later gear ratio calc    
+        if char == '*':
+            numArray[lineNum][index] = '*'
+
         if state == State.LOOKING_FOR_START_OF_NUMBER:
             if char.isdigit():
                 state = State.LOOKING_FOR_END_OF_NUMBER
                 numStart = index
-            # for later gear calc    
-            if char == '*':
-                numArray[lineNum][index] = '*'
 
         if state == State.LOOKING_FOR_END_OF_NUMBER:
             if char.isdigit():
@@ -110,7 +117,7 @@ for (lineNum, line) in enumerate(schematic):
                 # log the part ID in a 2D array
                 newPart = Part(num)
                 for i in range(numEnd, numStart + 1):
-                    numArray[lineNum][i] = newPart.getID()
+                    numArray[lineNum][i] = newPart
 
                 if isPartNumber == True:
                     sumParts += num
@@ -124,8 +131,8 @@ for (lineNum, line) in enumerate(schematic):
 
 print(f'Sum of parts is {sumParts}')
 
-for j in range(0, rows):
-    print(f'{numArray[j]}, length: {len(numArray[j])}')
+# for j in range(0, rows):
+#     print(f'{numArray[j]}, length: {len(numArray[j])}')
 
 gearRatio = 0
 
