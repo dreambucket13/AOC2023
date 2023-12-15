@@ -20,8 +20,8 @@ for game in games:
     myNumbersList = list(map(int, myNumbersList))
 
     for number in myNumbersList:
-        i = bisect.bisect_left(winningNumbersList, 6)
-        if i != len(winningNumbersList):
+        i = bisect.bisect_left(winningNumbersList, number)
+        if i < len(winningNumbersList):
             #it's in the list
             pass
 
