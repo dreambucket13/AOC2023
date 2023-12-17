@@ -19,6 +19,7 @@ totalPoints = 0
 card = 1
 
 parsedCards = []
+matchCache = []
 
 for game in games:
     gameData = game.split(" | ")
@@ -40,6 +41,7 @@ for game in games:
     myNumbersList = list(map(int, myNumbersList))
 
     matches = getMatches(myNumbersList, winningNumbersList)
+    matchCache.append(matches)
 
     points = 0
     if matches > 0:
@@ -55,6 +57,7 @@ print(f'Total points: {totalPoints}')
 
 totalCards = 0
 
+# cache the number of matches a card has
 for (index, card) in enumerate(parsedCards):
     cardsInHand = [index]
     nextHand = []
@@ -64,7 +67,7 @@ for (index, card) in enumerate(parsedCards):
         for cardNum in cardsInHand:
             numbers = parsedCards[cardNum][0]
             winningNumbers = parsedCards[cardNum][1]
-            matches = getMatches(numbers, winningNumbers)
+            matches = matchCache[cardNum]
             for i in range(1, matches + 1):
                 nextHand.append(cardNum + i)
                 totalCards += 1
