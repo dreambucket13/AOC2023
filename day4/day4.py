@@ -2,6 +2,7 @@
 
 import re
 import bisect
+import time
 
 def getMatches(myNumbersList, winningNumbersList):
     matches = 0
@@ -53,6 +54,7 @@ for game in games:
 
 print(f'Total points: {totalPoints}')
 
+startTime = time.time()
 totalCards = 0
 
 # cache the number of matches a card has
@@ -72,7 +74,40 @@ for index in range(len(matchCache)):
         cardsInHand = nextHand
         nextHand = []
 
-print(f'Total cards: {totalCards}')
+elapsedTime = time.time() - startTime
+print(f'Total cards: {totalCards} in {elapsedTime} time')
+
+
+
+def recursiveCount(card, matchCache, rootNodeCache):
+    matches = matchCache[card]
+
+    if rootNodeCache[card] != None:
+        return rootNodeCache[card]
+
+    # base case
+    if matches == 0:
+        return 1
+    else:
+        childTickets = 1
+        for i in range(1, matches + 1):
+            childTickets += recursiveCount(card + i, matchCache, rootNodeCache)
+            #cache result
+            if rootNodeCache[card] != None:
+                rootNodeCache[card] = childTickets
+        return childTickets
+
+startTime = time.time()
+rootNodeCache = [None] * len(matchCache)
+totalCards = 0
+for (card, matchCount) in enumerate(matchCache):
+    totalCards += recursiveCount(card, matchCache, rootNodeCache)
+elapsedTime = time.time() - startTime
+
+print(f'Recursive count: {totalCards} in {elapsedTime} time')
+
+
+        
 
 
     
