@@ -51,22 +51,18 @@ for game in games:
     #print(f'Card {card} matches {matches}, points: {points}')
     card += 1
 
-    parsedCards.append((myNumbersList, winningNumbersList))
-
 print(f'Total points: {totalPoints}')
 
 totalCards = 0
 
 # cache the number of matches a card has
-for (index, card) in enumerate(parsedCards):
+for index in range(len(matchCache)):
     cardsInHand = [index]
     nextHand = []
     totalCards += 1
 
     while len(cardsInHand) > 0:
         for cardNum in cardsInHand:
-            numbers = parsedCards[cardNum][0]
-            winningNumbers = parsedCards[cardNum][1]
             matches = matchCache[cardNum]
             for i in range(1, matches + 1):
                 nextHand.append(cardNum + i)
