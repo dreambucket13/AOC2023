@@ -17,7 +17,18 @@ def getMap(mapName: str, almanac: list, lineNum: int):
                 mapLine = mapLine[:-1]
 
             mapIntegers = list(map(int, mapLine.split(" ")))
-            conversionMap.append(mapIntegers)
+
+            #do the range stuff here
+            mapRange = mapIntegers[2]
+            distinationStart = mapIntegers[0]
+            sourceStart = mapIntegers[1]
+
+            parsedMap = {}
+
+            parsedMap['Destination'] = (distinationStart, distinationStart + mapRange)
+            parsedMap['Source'] = (sourceStart, sourceStart + mapRange)
+
+            conversionMap.append(parsedMap)
 
             if mapLineNum + 1 < len(almanac):
                 mapLineNum += 1
@@ -28,7 +39,6 @@ def getMap(mapName: str, almanac: list, lineNum: int):
         return conversionMap
     else:
         return None
-
 
 def main():
     input = open('day5/day5_0.txt', 'r')
@@ -56,7 +66,12 @@ def main():
             if parsedMap != None:
                 maps[mapType] = parsedMap
 
-    pass
+    # map the seeds
+                
+    for seed in seeds:
+
+
+        pass
 
 if __name__ == '__main__':
     main()
