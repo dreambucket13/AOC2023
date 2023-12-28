@@ -84,7 +84,8 @@ def main():
             if parsedMap != None:
                 parsedMaps[mapType] = parsedMap
 
-    # map the seeds
+    print('Maps parsed')
+    # map the seeds for part 1
     lowestLocation = None
     for seed in seeds:
 
@@ -93,7 +94,31 @@ def main():
         if lowestLocation == None or location < lowestLocation:
             lowestLocation = location
 
-    print(f'Lowest location: {lowestLocation}')
+    print(f'Part 1 lowest location: {lowestLocation}')
+
+    #part 2
+
+    # uh...I can go backwards maybe.  instead of mapping seed to location, map location to seed.
+    # starting from 0, the first location that maps to a seed should be the lowest.
+
+    lowestLocation = None
+    for (seedNum, seed) in enumerate(seeds):
+
+        if seedNum % 2 == 0:
+            start = seeds[seedNum]
+            length = seeds[seedNum + 1]
+        else:
+            continue
+        
+        for x in range(start, start + length):
+
+            location = mapSeed(x, parsedMaps)
+            print(f'Seed {x}, location: {location}')
+
+            if lowestLocation == None or location < lowestLocation:
+                lowestLocation = location
+
+    print(f'Part 2 lowest location: {lowestLocation}')
 
 if __name__ == '__main__':
     main()
