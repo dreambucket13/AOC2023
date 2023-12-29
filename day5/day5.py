@@ -57,8 +57,29 @@ def mapSeed(seed: int, parsedMaps: dict) -> int:
         
     return location
 
+
+def mapSeedReverse(seed: int, parsedMaps: dict) -> int:
+    
+    location = seed
+
+    START = 0
+    END = 1
+    
+    #destination and source are swapped since I am going the other way
+    for currentMap in reversed(parsedMaps):
+        for line in parsedMaps[currentMap]:
+            source = line['Destination']
+            destination = line['Source']
+
+            if source[START] <= location <= source[END]:
+                location = destination[START] + (location - source[START])
+                break
+        #print(f'seed: {seed}, map: {currentMap}, location: {location}')
+        
+    return location
+
 def main():
-    input = open('day5/day5_1.txt', 'r')
+    input = open('day5/day5_0.txt', 'r')
     almanac = input.readlines()
 
     mapTypes = ('seed-to-soil map:',
@@ -99,26 +120,13 @@ def main():
     #part 2
 
     # uh...I can go backwards maybe.  instead of mapping seed to location, map location to seed.
-    # starting from 0, the first location that maps to a seed should be the lowest.
+    # starting from 0, the first location that maps to a seed should be the lowest. 
 
-    lowestLocation = None
-    for (seedNum, seed) in enumerate(seeds):
+    lowestLocation = mapSeedReverse(46, parsedMaps)
+    #yep....got seed 82 going backward!
 
-        if seedNum % 2 == 0:
-            start = seeds[seedNum]
-            length = seeds[seedNum + 1]
-        else:
-            continue
-        
-        for x in range(start, start + length):
-
-            location = mapSeed(x, parsedMaps)
-            print(f'Seed {x}, location: {location}')
-
-            if lowestLocation == None or location < lowestLocation:
-                lowestLocation = location
-
-    print(f'Part 2 lowest location: {lowestLocation}')
+    pass
+    # print(f'Part 2 lowest location: {lowestLocation}')
 
 if __name__ == '__main__':
     main()
