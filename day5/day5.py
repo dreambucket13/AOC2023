@@ -78,8 +78,21 @@ def mapSeedReverse(seed: int, parsedMaps: dict) -> int:
         
     return location
 
+def isValidSeed(seedToFind: int, seeds:tuple):
+
+    for (index, seed) in enumerate(seeds):
+        if index % 2 == 0:
+            rangeStart = seeds[index]
+            rangeLength = seeds[index + 1]
+            rangeEnd = rangeStart + rangeLength
+            if rangeStart <= seedToFind <= rangeEnd:
+                return True
+        else:
+            continue
+    return False
+
 def main():
-    input = open('day5/day5_0.txt', 'r')
+    input = open('day5/day5_1.txt', 'r')
     almanac = input.readlines()
 
     mapTypes = ('seed-to-soil map:',
@@ -122,11 +135,26 @@ def main():
     # uh...I can go backwards maybe.  instead of mapping seed to location, map location to seed.
     # starting from 0, the first location that maps to a seed should be the lowest. 
 
-    lowestLocation = mapSeedReverse(46, parsedMaps)
-    #yep....got seed 82 going backward!
+    #yep....got seed 82 from location going backward!
 
-    pass
-    # print(f'Part 2 lowest location: {lowestLocation}')
+
+
+    lowestLocation = 0
+    location = 0
+
+    #still too slow...try only the valid locations from the final map.
+
+    while lowestLocation == 0:
+
+        backtrackedSeedNumber = mapSeedReverse(location, parsedMaps)
+
+        if isValidSeed(backtrackedSeedNumber, seeds):
+            lowestLocation = location
+            break
+        else:
+            location += 1
+
+    print(f'Part 2 lowest location: {lowestLocation}')
 
 if __name__ == '__main__':
     main()
