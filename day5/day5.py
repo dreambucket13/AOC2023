@@ -92,7 +92,7 @@ def isValidSeed(seedToFind: int, seeds:tuple):
     return False
 
 def main():
-    input = open('day5/day5_1.txt', 'r')
+    input = open('day5/day5_0.txt', 'r')
     almanac = input.readlines()
 
     mapTypes = ('seed-to-soil map:',
@@ -137,12 +137,10 @@ def main():
 
     #yep....got seed 82 from location going backward!
 
-
-
     lowestLocation = 0
     location = 0
 
-    #still too slow...try only the valid locations from the final map.
+    #still too slow...try only the valid locations from the final map?
 
     while lowestLocation == 0:
 
@@ -152,6 +150,7 @@ def main():
             lowestLocation = location
             break
         else:
+            print(f'Invalid seed {backtrackedSeedNumber} from location {location}')
             location += 1
 
     print(f'Part 2 lowest location: {lowestLocation}')
