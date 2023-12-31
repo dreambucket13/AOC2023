@@ -119,7 +119,7 @@ def isValidSeed(seedToFind: int, seeds:tuple):
     return False
 
 def main():
-    fileName = 'day5/day5_0.txt'
+    fileName = 'day5/day5_1.txt'
     input = open(fileName, 'r')
     almanac = input.readlines()
 
@@ -184,22 +184,22 @@ def main():
     #     else:
     #         print(f'Invalid seed at final location {location}')
 
-    mapSeedVerbose(82, parsedMaps)
+    # mapSeedVerbose(82, parsedMaps)
 
-    # map the seed to final locations
-    lowestLocation = None
-    for (seedNum, seed) in enumerate(seeds):
-        if seedNum % 2 == 0:
-            seedStart = seeds[seedNum]
-            seedRange = seeds[seedNum+1]
-            for x in range(seedStart, seedStart + seedRange):
-                finalLocation = mapSeed(x, parsedMaps)
-                if lowestLocation == None or finalLocation < lowestLocation:
-                    lowestLocation = finalLocation
-                # print(f'Seed {x}, final location {finalLocation}')
-        else:
-            continue
-    print(f'Part 2 lowest location going forward: {lowestLocation}')
+    # # map the seed to final locations
+    # lowestLocation = None
+    # for (seedNum, seed) in enumerate(seeds):
+    #     if seedNum % 2 == 0:
+    #         seedStart = seeds[seedNum]
+    #         seedRange = seeds[seedNum+1]
+    #         for x in range(seedStart, seedStart + seedRange):
+    #             finalLocation = mapSeed(x, parsedMaps)
+    #             if lowestLocation == None or finalLocation < lowestLocation:
+    #                 lowestLocation = finalLocation
+    #             # print(f'Seed {x}, final location {finalLocation}')
+    #     else:
+    #         continue
+    # print(f'Part 2 lowest location going forward: {lowestLocation}')
 
     # find the lowest by going backward
     lowestLocation = None
