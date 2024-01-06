@@ -160,46 +160,12 @@ def main():
 
     #part 2
 
-    # uh...I can go backwards maybe.  instead of mapping seed to location, map location to seed.
-    # starting from 0, the first location that maps to a seed should be the lowest. 
-
-    #yep....got seed 82 from location going backward!
-
     if fileName == 'day5/day5_0.txt':
         assert mapSeedReverse(46, parsedMaps) == 82
         assert mapSeedReverse(82, parsedMaps) == 79
         assert mapSeedReverse(43, parsedMaps) == 14
         assert mapSeedReverse(86, parsedMaps) == 55
         assert mapSeedReverse(35, parsedMaps) == 13
-
-
-
-    # location = 0
-
-    # # write out the valid seed locations
-    # while location <= 100:
-    #     checkSeed = mapSeedReverse(location, parsedMaps)
-    #     if isValidSeed(checkSeed, seeds):
-    #         print(f'VALID seed at final location {location}')
-    #     else:
-    #         print(f'Invalid seed at final location {location}')
-
-    # mapSeedVerbose(82, parsedMaps)
-
-    # # map the seed to final locations
-    # lowestLocation = None
-    # for (seedNum, seed) in enumerate(seeds):
-    #     if seedNum % 2 == 0:
-    #         seedStart = seeds[seedNum]
-    #         seedRange = seeds[seedNum+1]
-    #         for x in range(seedStart, seedStart + seedRange):
-    #             finalLocation = mapSeed(x, parsedMaps)
-    #             if lowestLocation == None or finalLocation < lowestLocation:
-    #                 lowestLocation = finalLocation
-    #             # print(f'Seed {x}, final location {finalLocation}')
-    #     else:
-    #         continue
-    # print(f'Part 2 lowest location going forward: {lowestLocation}')
 
     # find the lowest by going backward
     lowestLocation = None
@@ -216,45 +182,3 @@ def main():
 if __name__ == '__main__':
     main()
     
-    # locationHighGuess = 0
-    # locationLowGuess = 0
-    # location = 1
-
-    # #still too slow...try to get a basic high guess by doubling the location every iteration.
-
-    # while locationHighGuess == 0 :
-
-    #     backtrackedSeedNumber = mapSeedReverse(location, parsedMaps)
-
-    #     if isValidSeed(backtrackedSeedNumber, seeds):
-    #         locationHighGuess = location
-    #         break
-    #     else:
-    #         locationLowGuess = location
-    #         location *= 2
-
-    # else:
-    #     print('Did not find valid seed?')
-
-
-    # assert isValidSeed(mapSeedReverse(locationLowGuess, parsedMaps), seeds) == False
-    # assert isValidSeed(mapSeedReverse(locationHighGuess, parsedMaps), seeds) == True
-
-    # #ok...I have a low and high guess.  binary search?
-    
-    # while locationLowGuess < locationHighGuess:
-    #     print(f'low guess: {locationLowGuess}, high guess: {locationHighGuess}')
-    #     location = (locationHighGuess + locationLowGuess) // 2
-
-    #     backtrackedSeedNumber = mapSeedReverse(location, parsedMaps)
-
-    #     if isValidSeed(backtrackedSeedNumber, seeds) == False:
-    #         locationLowGuess = location
-    #     else:
-    #         locationHighGuess = location
-
-    #     if locationHighGuess - locationLowGuess == 1:
-    #         print(f'low guess {locationLowGuess} is {isValidSeed(mapSeedReverse(locationLowGuess, parsedMaps), seeds)}')
-    #         print(f'high guess {locationHighGuess} is {isValidSeed(mapSeedReverse(locationHighGuess, parsedMaps), seeds)}')   
-    #         lowestLocation = locationHighGuess         
-    #         break
