@@ -119,7 +119,7 @@ def isValidSeed(seedToFind: int, seeds:tuple):
     return False
 
 def main():
-    fileName = 'day5/day5_1.txt'
+    fileName = 'day5/day5_0.txt'
     input = open(fileName, 'r')
     almanac = input.readlines()
 
@@ -167,17 +167,32 @@ def main():
         assert mapSeedReverse(86, parsedMaps) == 55
         assert mapSeedReverse(35, parsedMaps) == 13
 
-    # find the lowest by going backward
-    lowestLocation = None
-    location = 0
-    while lowestLocation == None:
-        checkSeed = mapSeedReverse(location, parsedMaps)
-        if isValidSeed(checkSeed, seeds):
-            lowestLocation = location
-        else:
-            location += 1
+    # find the lowest by going backward - very slow
+    # lowestLocation = None
+    # location = 0
+    # while lowestLocation == None:
+    #     checkSeed = mapSeedReverse(location, parsedMaps)
+    #     if isValidSeed(checkSeed, seeds):
+    #         lowestLocation = location
+    #     else:
+    #         location += 1
+    # print(f'Part 2 lowest location going backward: {lowestLocation}')
+        
+    # next idea - map and morph the seed ranges themselves
+    
+    lowestLocation = 0
+    seedRanges = []
 
-    print(f'Part 2 lowest location going backward: {lowestLocation}')
+    for (index, seed) in enumerate(seeds):
+        if index % 2 == 0:
+            seedRanges.append( (seeds[index], seeds[index] + seeds[index + 1]) )
+        else:
+            continue
+
+
+    
+
+    print(f'Part 2 lowest location using ranges: {lowestLocation}')
 
 if __name__ == '__main__':
     main()
