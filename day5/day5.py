@@ -158,7 +158,7 @@ def main():
 
     print(f'Part 1 lowest location: {lowestLocation}')
 
-    #part 2
+    #part 2 - works but is very slow
 
     if fileName == 'day5/day5_0.txt':
         assert mapSeedReverse(46, parsedMaps) == 82
@@ -185,9 +185,35 @@ def main():
 
     for (index, seed) in enumerate(seeds):
         if index % 2 == 0:
-            seedRanges.append( (seeds[index], seeds[index] + seeds[index + 1]) )
+            seedRanges.append( [seeds[index], seeds[index] + seeds[index + 1]] )
         else:
             continue
+
+    for seedRange in seedRanges:
+        for parsedMap in parsedMaps:
+                for currentMap in parsedMaps:
+                    for line in parsedMaps[currentMap]:
+                        sourceStart = line['Source'][0]
+                        sourceEnd = line['Source'][1]
+
+                        delta = line['Destination'][0] - sourceStart
+
+                        # morph the range
+                        morphed = False
+
+                        if sourceStart <= seedRange[0] <= sourceEnd:
+                            seedRange[0] += delta
+                            morphed = True
+
+                        if sourceStart <= seedRange[1] <= sourceEnd:
+                            seedRange[1] += delta
+                            morphed = True
+
+                        if morphed == True:
+                            break
+                        
+
+
 
 
     
