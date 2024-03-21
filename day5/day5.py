@@ -17,7 +17,7 @@ def getMap(mapName: str, almanac: list, lineNum: int):
             mapIntegers = list(map(int, mapLine.split(" ")))
 
             #do the range stuff here
-            mapRange = mapIntegers[2]
+            mapRange = mapIntegers[2] - 1
             distinationStart = mapIntegers[0]
             sourceStart = mapIntegers[1]
 
@@ -118,6 +118,52 @@ def isValidSeed(seedToFind: int, seeds:tuple):
             continue
     return False
 
+def morphRange(seedRange: tuple, sourceRange, destinationRange) -> tuple:
+
+    remainderBefore = None
+    remainderAfter = None
+    morphed = seedRange
+    matched = False
+
+    ranges = (remainderBefore, morphed, remainderAfter), matched
+
+    # no overlap
+    if seedRange[1] < sourceRange[0] or seedRange[0] > sourceRange[1]:
+        return ranges
+    
+    matched = True
+
+    delta = destinationRange[0] - sourceRange[0]
+
+    intersectionStart = 0
+    intersectionEnd = 0
+
+    # the larger one is the intersection start
+    if seedRange[0] > sourceRange[0]:
+        intersectionStart = seedRange[0]
+    else:
+        intersectionStart = sourceRange[0]
+
+    # the smaller one is the intersection end
+    if seedRange[1] < sourceRange[1]:
+        intersectionEnd = seedRange[1]
+    else:
+        intersectionEnd = sourceRange[1]
+
+    intersection = intersectionStart, intersectionEnd
+    morphed = (intersectionStart + delta, intersectionEnd + delta)
+
+    #need a reminder before?
+    if seedRange[0] < sourceRange[0]:
+        remainderBefore = seedRange[0], sourceRange[0] - 1
+
+    #need a reminder after?
+    if seedRange[1] > sourceRange[1]:
+        remainderAfter = sourceRange[1] + 1, seedRange[1]
+
+    ranges = (remainderBefore, morphed, remainderAfter), matched
+    return ranges
+
 def main():
     fileName = 'day5/day5_0.txt'
     input = open(fileName, 'r')
@@ -158,67 +204,72 @@ def main():
 
     print(f'Part 1 lowest location: {lowestLocation}')
 
-    #part 2 - works but is very slow
+    #part 2 try 2
 
-    if fileName == 'day5/day5_0.txt':
-        assert mapSeedReverse(46, parsedMaps) == 82
-        assert mapSeedReverse(82, parsedMaps) == 79
-        assert mapSeedReverse(43, parsedMaps) == 14
-        assert mapSeedReverse(86, parsedMaps) == 55
-        assert mapSeedReverse(35, parsedMaps) == 13
-
-    # find the lowest by going backward - very slow
-    # lowestLocation = None
-    # location = 0
-    # while lowestLocation == None:
-    #     checkSeed = mapSeedReverse(location, parsedMaps)
-    #     if isValidSeed(checkSeed, seeds):
-    #         lowestLocation = location
-    #     else:
-    #         location += 1
-    # print(f'Part 2 lowest location going backward: {lowestLocation}')
-        
-    # next idea - map and morph the seed ranges themselves
-    
-    lowestLocation = 0
     seedRanges = []
 
-    for (index, seed) in enumerate(seeds):
-        if index % 2 == 0:
-            seedRanges.append( [seeds[index], seeds[index] + seeds[index + 1]] )
-        else:
+    for index, seed in enumerate(seeds):
+        if index % 2 != 0:
             continue
+        seedRanges.append((seed, seed + seeds[index + 1] - 1))
 
-    for seedRange in seedRanges:
-        for parsedMap in parsedMaps:
-                for currentMap in parsedMaps:
-                    for line in parsedMaps[currentMap]:
-                        sourceStart = line['Source'][0]
-                        sourceEnd = line['Source'][1]
-
-                        delta = line['Destination'][0] - sourceStart
-
-                        # morph the range
-                        morphed = False
-
-                        if sourceStart <= seedRange[0] <= sourceEnd:
-                            seedRange[0] += delta
-                            morphed = True
-
-                        if sourceStart <= seedRange[1] <= sourceEnd:
-                            seedRange[1] += delta
-                            morphed = True
-
-                        if morphed == True:
-                            break
-                        
+    #first map the seeds brute force
+    # for seedRange in seedRanges:
+    #     for seed in range(seedRange[0], seedRange[1] + 1):
+    #         print(f'start: {seed}, mapped: {mapSeed(seed, parsedMaps)}')
 
 
+    test1 = morphRange((0,1), (10,20), (110,130))
+    print(test1)
+    test2 = morphRange((15,18), (10,20), (110,120))
+    print(test2)
+    print(morphRange((15,22), (10,20), (110,120)))
+    print(morphRange((5,25), (10,20), (110,120)))
+    print(morphRange((9,21), (10,20), (110,120)))
+    # for mapType in mapTypes:
+    #     pendingSeedRanges = []
+    #     for seedRange in seedRanges:
+    #         for mapLine in parsedMaps[mapType]:
+    #             matchInfo = morphRange(seedRange, mapLine['Source'], mapLine['Destination'])
+    #             morphedRanges = matchInfo[0]
+    #             matched = matchInfo[1]
 
+    #             if matched == True:
+    #                 for morphedRange in morphedRanges:
+    #                     if morphedRange is not None:
+    #                         pendingSeedRanges.append(morphedRange)
+    #                 break
+
+    #         if matched == False:
+    #             pendingSeedRanges.append(seedRange)
+
+    #     seedRanges = pendingSeedRanges
+    #     # it's doubling the ranges
 
     
+    # #part 2 - works but is very slow
 
-    print(f'Part 2 lowest location using ranges: {lowestLocation}')
+    # if fileName == 'day5/day5_0.txt':
+    #     assert mapSeedReverse(46, parsedMaps) == 82
+    #     assert mapSeedReverse(82, parsedMaps) == 79
+    #     assert mapSeedReverse(43, parsedMaps) == 14
+    #     assert mapSeedReverse(86, parsedMaps) == 55
+    #     assert mapSeedReverse(35, parsedMaps) == 13
+
+    # # find the lowest by going backward - very slow
+    # # lowestLocation = None
+    # # location = 0
+    # # while lowestLocation == None:
+    # #     checkSeed = mapSeedReverse(location, parsedMaps)
+    # #     if isValidSeed(checkSeed, seeds):
+    # #         lowestLocation = location
+    # #     else:
+    # #         location += 1
+    # # print(f'Part 2 lowest location going backward: {lowestLocation}')
+        
+    # # next idea - map and morph the seed ranges themselves
+    
+    # print(f'Part 2 lowest location : {lowestLocation}')
 
 if __name__ == '__main__':
     main()
