@@ -165,7 +165,7 @@ def morphRange(seedRange: tuple, sourceRange, destinationRange) -> tuple:
     return ranges
 
 def main():
-    fileName = 'day5/day5_0.txt'
+    fileName = 'day5/day5_1.txt'
     input = open(fileName, 'r')
     almanac = input.readlines()
 
@@ -229,18 +229,18 @@ def main():
     # print(morphRange((10,20), (10,20), (110,120)))
 
     #verify mapping a single seed
-    seedRange = (82,82)
-    for mapType in mapTypes:
-        for mapLine in parsedMaps[mapType]:
-            matchInfo = morphRange(seedRange, mapLine['Source'], mapLine['Destination'])
-            seedRange = matchInfo[0][1]
-            matched = matchInfo[1]
-            print(seedRange)
-            if matched:
-                break
+    # seedRange = (82,82)
+    # for mapType in mapTypes:
+    #     for mapLine in parsedMaps[mapType]:
+    #         matchInfo = morphRange(seedRange, mapLine['Source'], mapLine['Destination'])
+    #         seedRange = matchInfo[0][1]
+    #         matched = matchInfo[1]
+    #         print(seedRange)
+    #         if matched:
+    #             break
         
-    pass
-
+    
+    lowestLocation = None
 
     for mapType in mapTypes:
         modifiedSeedRanges = []
@@ -266,12 +266,17 @@ def main():
 
             #add back the unmodified seed ranges here
             seedRanges = pendingSeedRanges    
-            
+
         #add back the modified seed ranges here
         for modifiedSeedRange in modifiedSeedRanges:
             seedRanges.append(modifiedSeedRange)
 
-    pass
+    for seedRange in seedRanges:
+        if lowestLocation == None:
+            lowestLocation = seedRange[0]
+        elif seedRange[0] < lowestLocation:
+            lowestLocation = seedRange[0]
+
 
     
     # #part 2 - works but is very slow
@@ -296,7 +301,7 @@ def main():
         
     # # next idea - map and morph the seed ranges themselves
     
-    # print(f'Part 2 lowest location : {lowestLocation}')
+    print(f'Part 2 lowest location : {lowestLocation}')
 
 if __name__ == '__main__':
     main()
