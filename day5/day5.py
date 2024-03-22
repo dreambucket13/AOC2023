@@ -219,32 +219,59 @@ def main():
     #         print(f'start: {seed}, mapped: {mapSeed(seed, parsedMaps)}')
 
 
-    test1 = morphRange((0,1), (10,20), (110,130))
-    print(test1)
-    test2 = morphRange((15,18), (10,20), (110,120))
-    print(test2)
-    print(morphRange((15,22), (10,20), (110,120)))
-    print(morphRange((5,25), (10,20), (110,120)))
-    print(morphRange((9,21), (10,20), (110,120)))
-    # for mapType in mapTypes:
-    #     pendingSeedRanges = []
-    #     for seedRange in seedRanges:
-    #         for mapLine in parsedMaps[mapType]:
-    #             matchInfo = morphRange(seedRange, mapLine['Source'], mapLine['Destination'])
-    #             morphedRanges = matchInfo[0]
-    #             matched = matchInfo[1]
+    # test1 = morphRange((0,1), (10,20), (110,130))
+    # print(test1)
+    # test2 = morphRange((15,18), (10,20), (110,120))
+    # print(test2)
+    # print(morphRange((15,22), (10,20), (110,120)))
+    # print(morphRange((5,25), (10,20), (110,120)))
+    # print(morphRange((9,21), (10,20), (110,120)))
+    # print(morphRange((10,20), (10,20), (110,120)))
 
-    #             if matched == True:
-    #                 for morphedRange in morphedRanges:
-    #                     if morphedRange is not None:
-    #                         pendingSeedRanges.append(morphedRange)
-    #                 break
+    #verify mapping a single seed
+    seedRange = (82,82)
+    for mapType in mapTypes:
+        for mapLine in parsedMaps[mapType]:
+            matchInfo = morphRange(seedRange, mapLine['Source'], mapLine['Destination'])
+            seedRange = matchInfo[0][1]
+            matched = matchInfo[1]
+            print(seedRange)
+            if matched:
+                break
+        
+    pass
 
-    #         if matched == False:
-    #             pendingSeedRanges.append(seedRange)
 
-    #     seedRanges = pendingSeedRanges
-    #     # it's doubling the ranges
+    for mapType in mapTypes:
+        modifiedSeedRanges = []
+        for mapLine in parsedMaps[mapType]:
+            pendingSeedRanges = []
+            for seedRange in seedRanges:
+
+                priorSeedRange = seedRange
+
+                matchInfo = morphRange(seedRange, mapLine['Source'], mapLine['Destination'])
+                morphedRanges = matchInfo[0]
+                #actually should only pass if they are a remainder or are unchanged
+
+                if morphedRanges[1] == priorSeedRange:
+                    pendingSeedRanges.append(morphedRanges[1])
+                else:
+                    modifiedSeedRanges.append(morphedRanges[1])
+
+                if morphedRanges[0] is not None:
+                    pendingSeedRanges.append(morphedRanges[0])
+                if morphedRanges[2] is not None:
+                    pendingSeedRanges.append(morphedRanges[2])
+
+            #add back the unmodified seed ranges here
+            seedRanges = pendingSeedRanges    
+            
+        #add back the modified seed ranges here
+        for modifiedSeedRange in modifiedSeedRanges:
+            seedRanges.append(modifiedSeedRange)
+
+    pass
 
     
     # #part 2 - works but is very slow
