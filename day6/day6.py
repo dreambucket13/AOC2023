@@ -74,7 +74,7 @@ def main():
     #                 y = ((x) * (a - x)) 
     #                 y - z = ((x) * (a - x)) - z
     #                 0 = -x^2 + ax - z
-    #                 quadratic eq where a = -1, b = totalTime, c = record
+    #                 quadratic eq where a = -1, b = totalTime (aka a here), c = record (z)
     # calculate zero intercepts for this equation
 
     #     Time:        45     98     83     73
