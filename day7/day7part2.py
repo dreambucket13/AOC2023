@@ -104,7 +104,7 @@ class Hand:
                 self.primaryRank += FOUR_OF_A_KIND
                 return
             
-            if  ((self.threeOfAKindCard is not None) and (len(self.twoOfAKindCards) == 1) or (len(self.twoOfAKindCards) == 2 and self.numJokers == 1) ):
+            if  ((self.threeOfAKindCard is not None and len(self.twoOfAKindCards) == 1) or (len(self.twoOfAKindCards) == 2 and self.numJokers == 1) ):
                 self.primaryRank += FULL_HOUSE
                 return      
 
