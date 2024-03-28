@@ -23,6 +23,35 @@ def main():
 
         nodes[nodeName] = (left, right)
 
+    #part 2
+
+    ZZZfound = False
+    steps = 0
+
+    #everything repeats....calculate the 'period' of each starting node then calculate when they align?
+
+    while ZZZfound == False:
+
+        for turn in turns:
+            ZZZfound = True
+            activeNodesTemp = []
+            for node in part2ActiveNodes:
+                if turn == 'L':
+                    activeNodesTemp.append(nodes[node][0])
+                    if node.endswith('Z') == False:
+                        ZZZfound = False
+                else:
+                    activeNodesTemp.append(nodes[node][1])
+                    if node.endswith('Z') == False:
+                        ZZZfound = False
+            if ZZZfound == True:
+                break
+
+            steps += 1
+            part2ActiveNodes = activeNodesTemp
+            print(f'{part2ActiveNodes}')
+            
+    print(f'Part 2 steps: {steps}')
     #part 1
     # ZZZfound = False
     # currentNode = 'AAA'
@@ -43,36 +72,6 @@ def main():
     #             break
 
     # print(f'Steps: {steps}')
-
-    #part 2
-
-    ZZZfound = False
-    steps = 0
-
-    while ZZZfound == False:
-
-        for turn in turns:
-            ZZZfound = True
-            activeNodesTemp = []
-            if turn == 'L':
-                for node in part2ActiveNodes:
-                    activeNodesTemp.append(nodes[node][0])
-                    if node.endswith('Z') == False:
-                        ZZZfound = False
-            else:
-                for node in part2ActiveNodes:
-                    activeNodesTemp.append(nodes[node][1])
-                    if node.endswith('Z') == False:
-                        ZZZfound = False
-
-            if ZZZfound == True:
-                break
-
-            steps += 1
-            part2ActiveNodes = activeNodesTemp
-            print(f'{part2ActiveNodes}')
-            
-    print(f'Part 2 steps: {steps}')
     
 if __name__ == '__main__':
     main()
