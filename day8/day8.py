@@ -1,8 +1,10 @@
 # https://adventofcode.com/2023/day/8
 
+import math
+
 def main():
 
-    with open('day8/day8_3.txt') as input:
+    with open('day8/day8_2.txt') as input:
         inputLines = input.readlines()
         
     turns = inputLines[0][:-1]
@@ -25,33 +27,40 @@ def main():
 
     #part 2
 
-    ZZZfound = False
-    steps = 0
-
+    steps = 1
+    periods = [0] * len(part2ActiveNodes) #steps to get to a Z
     #everything repeats....calculate the 'period' of each starting node then calculate when they align?
 
-    while ZZZfound == False:
+    for index, node in enumerate(part2ActiveNodes):
+        ZZZfound = False
+        currentNode = node
+        while ZZZfound == False:
 
-        for turn in turns:
-            ZZZfound = True
-            activeNodesTemp = []
-            for node in part2ActiveNodes:
+            for turn in turns:
                 if turn == 'L':
-                    activeNodesTemp.append(nodes[node][0])
-                    if node.endswith('Z') == False:
-                        ZZZfound = False
+                    currentNode = nodes[currentNode][0]
                 else:
-                    activeNodesTemp.append(nodes[node][1])
-                    if node.endswith('Z') == False:
-                        ZZZfound = False
-            if ZZZfound == True:
-                break
+                    currentNode = nodes[currentNode][1]
 
-            steps += 1
-            part2ActiveNodes = activeNodesTemp
-            print(f'{part2ActiveNodes}')
-            
+                periods[index] += 1
+
+                if currentNode.endswith('Z'):
+                    ZZZfound = True
+                    break
+
+    print(f'periods: {periods}')
+
+    gcd = math.gcd(*periods)
+
+    for index, period in enumerate(periods):
+        periods[index] = period//gcd
+        steps *= periods[index]
+
+    print(f'periods: {periods}')            
     print(f'Part 2 steps: {steps}')
+
+    # 28141477151 is too low
+
     #part 1
     # ZZZfound = False
     # currentNode = 'AAA'
