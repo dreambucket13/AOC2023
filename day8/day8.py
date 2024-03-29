@@ -50,16 +50,9 @@ def main():
 
     print(f'periods: {periods}')
 
-    gcd = math.gcd(*periods)
-
-    for index, period in enumerate(periods):
-        periods[index] = period//gcd
-        steps *= periods[index]
-
-    print(f'periods: {periods}')            
+    steps = math.lcm(*periods)
+        
     print(f'Part 2 steps: {steps}')
-
-    # 28141477151 is too low
 
     #part 1
     # ZZZfound = False
