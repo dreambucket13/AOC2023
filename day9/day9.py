@@ -15,7 +15,14 @@ def main():
     for history in histories:
         totalExtrapolatedForward += extrapolateForward(history)
 
-    print(totalExtrapolatedForward)
+    print(f'forward: {totalExtrapolatedForward}')
+
+    totalExtrapolatedBackward = 0
+
+    for history in histories:
+        totalExtrapolatedBackward += extrapolateBackward(history)
+
+    print(f'backward: {totalExtrapolatedBackward}')
 
 def extrapolateForward(history):
 
@@ -48,6 +55,40 @@ def extrapolateForward(history):
         extrapolated += line[-1]
 
     return extrapolated
-    
+
+def extrapolateBackward(history):
+
+    deltaLines = []
+    allZero = False
+    currentLine = history
+    deltaLines.append(history)
+
+    while allZero == False:
+
+        allZero = True
+        deltas = []
+
+        for index, value in enumerate(currentLine):
+            if index == 0:
+                continue
+            delta = value - currentLine[index - 1]
+            deltas.append(delta)
+
+            if delta != 0:
+                allZero = False
+        
+        deltaLines.append(deltas)
+
+        currentLine = deltaLines[len(deltaLines) - 1]
+
+    extrapolated = 0
+
+    for line in reversed(deltaLines):
+
+        extrapolated = line[0] - extrapolated
+
+    return extrapolated
+
+
 if __name__ == '__main__':
     main()
