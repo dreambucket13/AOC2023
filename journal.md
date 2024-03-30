@@ -6,3 +6,11 @@ My part 2 solution (starting from location 0 and backtracing until I find the fi
 This is not a problem I have seen before so this solution type could be interesting.
 
 https://github.com/Sepulchre49/aoc-2023/blob/main/day5/Solution.md  
+
+## Day 6
+
+I was told there would be no math.
+
+## Day 8
+
+The key to part 2 is recognizing that the sequences all repeat.  So, finding the least common multiple is where they meet.
