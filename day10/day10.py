@@ -19,7 +19,7 @@ def findStart(map: list) -> tuple:
 def exitDirection(currentPosition: tuple, map: list) -> tuple:
     pass
 
-def initialDirections(position: tuple, map: list) -> tuple:
+def initialDirections(position: tuple, map: list) -> list:
                         
     directionsToCheck = ( NORTH, SOUTH, EAST, WEST )
 
@@ -41,17 +41,17 @@ def initialDirections(position: tuple, map: list) -> tuple:
             if map[rowToCheck][colToCheck] in ('|', '7', 'F'):
                 validDirections.append( (rowToCheck, colToCheck))
 
-        if directionToCheck[NAME] == 'South':
+        elif directionToCheck[NAME] == 'South':
             #these accept movement from the north
             if map[rowToCheck][colToCheck] in ('|', 'L', 'J'):
                 validDirections.append( (rowToCheck, colToCheck))
 
-        if directionToCheck[NAME] == 'East':
+        elif directionToCheck[NAME] == 'East':
             #these accept movement from the west
             if map[rowToCheck][colToCheck] in ('-', '7', 'J'):
                 validDirections.append( (rowToCheck, colToCheck))
 
-        if directionToCheck[NAME] == 'West':
+        elif directionToCheck[NAME] == 'West':
             #these accept movement from the east
             if map[rowToCheck][colToCheck] in ('-', 'L', 'F'):
                 validDirections.append( (rowToCheck, colToCheck))
