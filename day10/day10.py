@@ -15,15 +15,75 @@ def findStart(map: list) -> tuple:
         for col, char in enumerate(line):
             if char == 'S':
                 return (row, col)
-            
-def exitDirection(currentPosition: tuple, map: list) -> tuple:
-    pass
+
+def movePosition(direction: tuple, position: tuple):
+
+    position = tuple(map(lambda i, j: i + j, position, direction))
+
+    return position
+
+def nextPosition(currentPosition: tuple, moveDirection, map: list) -> tuple:
+    
+    currentPipe = map[currentPosition[ROW]][currentPosition[COL]]
+
+    newDirection = None
+    newPosition = None
+
+    match moveDirection:
+        case 'North':
+            match currentPipe:
+                case '|':
+                    newPosition = movePosition(NORTH, currentPosition)
+                    newDirection = 'North'
+                case '7':
+                    newPosition = movePosition(WEST, currentPosition)
+                    newDirection = 'West'
+                case 'F':
+                    newPosition = movePosition(EAST, currentPosition)
+                    newDirection = 'East'
+        case 'South':
+            match currentPipe:
+                case '|':
+                    newPosition = movePosition(SOUTH, currentPosition)
+                    newDirection = 'South'
+                case 'L':
+                    newPosition = movePosition(EAST, currentPosition)
+                    newDirection = 'East'
+                case 'J':
+                    newPosition = movePosition(WEST, currentPosition)
+                    newDirection = 'West'
+        case 'East':
+            match currentPipe:
+                case '-':
+                    newPosition = movePosition(EAST, currentPosition)
+                    newDirection = 'East'
+                case 'J':
+                    newPosition = movePosition(NORTH, currentPosition)
+                    newDirection = 'North'
+                case '7':
+                    newPosition = movePosition(SOUTH, currentPosition)
+                    newDirection = 'South'
+        case 'West':
+            match currentPipe:
+                case '-':
+                    newPosition = movePosition(WEST, currentPosition)
+                    newDirection = 'West'
+                case 'L':
+                    newPosition = movePosition(NORTH, currentPosition)
+                    newDirection = 'North'
+                case 'F':
+                    newPosition = movePosition(SOUTH, currentPosition)
+                    newDirection = 'South'
+
+    return (newPosition, newDirection)
+
+              
 
 def initialDirections(position: tuple, map: list) -> list:
                         
     directionsToCheck = ( NORTH, SOUTH, EAST, WEST )
 
-    validDirections = []
+    initialPositionsAndDirections = []
 
     for directionToCheck in directionsToCheck:
 
@@ -39,24 +99,24 @@ def initialDirections(position: tuple, map: list) -> list:
         if directionToCheck[NAME] == 'North':
             #these accept movement from the south
             if map[rowToCheck][colToCheck] in ('|', '7', 'F'):
-                validDirections.append( (rowToCheck, colToCheck))
+                initialPositionsAndDirections.append( ((rowToCheck, colToCheck), 'North'))
 
         elif directionToCheck[NAME] == 'South':
             #these accept movement from the north
             if map[rowToCheck][colToCheck] in ('|', 'L', 'J'):
-                validDirections.append( (rowToCheck, colToCheck))
+                initialPositionsAndDirections.append( ((rowToCheck, colToCheck), 'South'))
 
         elif directionToCheck[NAME] == 'East':
             #these accept movement from the west
             if map[rowToCheck][colToCheck] in ('-', '7', 'J'):
-                validDirections.append( (rowToCheck, colToCheck))
+                initialPositionsAndDirections.append( ((rowToCheck, colToCheck), 'East'))
 
         elif directionToCheck[NAME] == 'West':
             #these accept movement from the east
             if map[rowToCheck][colToCheck] in ('-', 'L', 'F'):
-                validDirections.append( (rowToCheck, colToCheck))
+                initialPositionsAndDirections.append( ((rowToCheck, colToCheck), 'West'))
 
-    return validDirections
+    return initialPositionsAndDirections
 
 
 def main():
@@ -75,7 +135,17 @@ def main():
     initial = initialDirections( start , map)
 
     #expect (2,1) and (3,0)
-    print(initial)
+    print(f'first position: {initial[0]}')
+
+    next1 = nextPosition(initial[0][0], initial[0][1], map)
+
+    print(f'next: {next1}')
+
+    print(f'first position: {initial[1]}')
+
+    next2 = nextPosition(initial[1][0], initial[1][1], map)
+
+    print(f'next: {next2}')
 
     pass
 
