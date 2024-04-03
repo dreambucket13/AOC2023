@@ -123,7 +123,7 @@ def main():
 
     map = []
 
-    with open('day10/day10_0.txt') as input:
+    with open('day10/day10_1.txt') as input:
         inputLines = input.readlines()
 
     for line in inputLines:
@@ -134,20 +134,21 @@ def main():
 
     initial = initialDirections( start , map)
 
-    #expect (2,1) and (3,0)
-    print(f'first position: {initial[0]}')
 
-    next1 = nextPosition(initial[0][0], initial[0][1], map)
+    way1 = initial[0]
 
-    print(f'next: {next1}')
+    way2 = initial[1]
 
-    print(f'first position: {initial[1]}')
+    steps = 1
 
-    next2 = nextPosition(initial[1][0], initial[1][1], map)
+    while way1[0] != way2[0]:
+        
+        # print(f'way 1: {way1}, way 2: {way2}')
+        way1 = nextPosition(way1[0], way1[1], map)
+        way2 = nextPosition(way2[0], way2[1], map)
+        steps += 1
 
-    print(f'next: {next2}')
-
-    pass
+    print(f'steps: {steps}')
 
 if __name__ == '__main__':
     main()
