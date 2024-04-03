@@ -1,14 +1,19 @@
 # https://adventofcode.com/2023/day/10
 
-# row, col, name
-SOUTH = (1, 0, 'South')
-NORTH = (-1, 0, 'North')
-EAST = (0, 1, 'East')
-WEST = (0, -1, 'West')
+# row, col
+SOUTH = (1, 0)
+NORTH = (-1, 0)
+EAST = (0, 1)
+WEST = (0, -1)
 
 ROW = 0
 COL = 1
-NAME = 2
+
+class PositionAndDirection:
+    def __init__(self, position, direction):
+        self.position = position
+        self.direction = direction
+
 
 def findStart(map: list) -> tuple:
     for row, line in enumerate(map):
@@ -22,64 +27,66 @@ def movePosition(direction: tuple, position: tuple):
 
     return position
 
-def nextPosition(currentPosition: tuple, moveDirection, map: list) -> tuple:
+def nextPosition(currentPositionAndDirection: PositionAndDirection, map: list) -> tuple:
     
+    currentPosition = currentPositionAndDirection.position
+    moveDirection = currentPositionAndDirection.direction
+
     currentPipe = map[currentPosition[ROW]][currentPosition[COL]]
 
     newDirection = None
     newPosition = None
 
-    match moveDirection:
-        case 'North':
-            match currentPipe:
-                case '|':
-                    newPosition = movePosition(NORTH, currentPosition)
-                    newDirection = 'North'
-                case '7':
-                    newPosition = movePosition(WEST, currentPosition)
-                    newDirection = 'West'
-                case 'F':
-                    newPosition = movePosition(EAST, currentPosition)
-                    newDirection = 'East'
-        case 'South':
-            match currentPipe:
-                case '|':
-                    newPosition = movePosition(SOUTH, currentPosition)
-                    newDirection = 'South'
-                case 'L':
-                    newPosition = movePosition(EAST, currentPosition)
-                    newDirection = 'East'
-                case 'J':
-                    newPosition = movePosition(WEST, currentPosition)
-                    newDirection = 'West'
-        case 'East':
-            match currentPipe:
-                case '-':
-                    newPosition = movePosition(EAST, currentPosition)
-                    newDirection = 'East'
-                case 'J':
-                    newPosition = movePosition(NORTH, currentPosition)
-                    newDirection = 'North'
-                case '7':
-                    newPosition = movePosition(SOUTH, currentPosition)
-                    newDirection = 'South'
-        case 'West':
-            match currentPipe:
-                case '-':
-                    newPosition = movePosition(WEST, currentPosition)
-                    newDirection = 'West'
-                case 'L':
-                    newPosition = movePosition(NORTH, currentPosition)
-                    newDirection = 'North'
-                case 'F':
-                    newPosition = movePosition(SOUTH, currentPosition)
-                    newDirection = 'South'
+    if moveDirection == NORTH:
+        match currentPipe:
+            case '|':
+                newPosition = movePosition(NORTH, currentPosition)
+                newDirection = NORTH
+            case '7':
+                newPosition = movePosition(WEST, currentPosition)
+                newDirection = WEST
+            case 'F':
+                newPosition = movePosition(EAST, currentPosition)
+                newDirection = EAST
+    elif moveDirection == SOUTH:
+        match currentPipe:
+            case '|':
+                newPosition = movePosition(SOUTH, currentPosition)
+                newDirection = SOUTH
+            case 'L':
+                newPosition = movePosition(EAST, currentPosition)
+                newDirection = EAST
+            case 'J':
+                newPosition = movePosition(WEST, currentPosition)
+                newDirection = WEST
+    elif moveDirection == EAST:
+        match currentPipe:
+            case '-':
+                newPosition = movePosition(EAST, currentPosition)
+                newDirection = EAST
+            case 'J':
+                newPosition = movePosition(NORTH, currentPosition)
+                newDirection = NORTH
+            case '7':
+                newPosition = movePosition(SOUTH, currentPosition)
+                newDirection = SOUTH
+    if moveDirection == WEST:
+        match currentPipe:
+            case '-':
+                newPosition = movePosition(WEST, currentPosition)
+                newDirection = WEST
+            case 'L':
+                newPosition = movePosition(NORTH, currentPosition)
+                newDirection = NORTH
+            case 'F':
+                newPosition = movePosition(SOUTH, currentPosition)
+                newDirection = SOUTH
 
-    return (newPosition, newDirection)
+    return PositionAndDirection(newPosition, newDirection)
 
               
 
-def initialDirections(position: tuple, map: list) -> list:
+def initialDirections(initialPosition: tuple, map: list) -> list:
                         
     directionsToCheck = ( NORTH, SOUTH, EAST, WEST )
 
@@ -87,8 +94,8 @@ def initialDirections(position: tuple, map: list) -> list:
 
     for directionToCheck in directionsToCheck:
 
-        rowToCheck = position[ROW] + directionToCheck[ROW]
-        colToCheck = position[COL] + directionToCheck[COL]
+        rowToCheck = initialPosition[ROW] + directionToCheck[ROW]
+        colToCheck = initialPosition[COL] + directionToCheck[COL]
 
         if 0 > (rowToCheck) or (rowToCheck) >= len(map[0]):
             continue
@@ -96,25 +103,25 @@ def initialDirections(position: tuple, map: list) -> list:
         if 0 > (colToCheck) or (colToCheck) >= len(map):
             continue
 
-        if directionToCheck[NAME] == 'North':
+        if directionToCheck == NORTH:
             #these accept movement from the south
             if map[rowToCheck][colToCheck] in ('|', '7', 'F'):
-                initialPositionsAndDirections.append( ((rowToCheck, colToCheck), 'North'))
+                initialPositionsAndDirections.append( PositionAndDirection((rowToCheck, colToCheck), NORTH) )
 
-        elif directionToCheck[NAME] == 'South':
+        elif directionToCheck == SOUTH:
             #these accept movement from the north
             if map[rowToCheck][colToCheck] in ('|', 'L', 'J'):
-                initialPositionsAndDirections.append( ((rowToCheck, colToCheck), 'South'))
+                initialPositionsAndDirections.append( PositionAndDirection((rowToCheck, colToCheck), SOUTH) )
 
-        elif directionToCheck[NAME] == 'East':
+        elif directionToCheck == EAST:
             #these accept movement from the west
             if map[rowToCheck][colToCheck] in ('-', '7', 'J'):
-                initialPositionsAndDirections.append( ((rowToCheck, colToCheck), 'East'))
+                initialPositionsAndDirections.append( PositionAndDirection((rowToCheck, colToCheck), EAST) )
 
-        elif directionToCheck[NAME] == 'West':
+        elif directionToCheck == WEST:
             #these accept movement from the east
             if map[rowToCheck][colToCheck] in ('-', 'L', 'F'):
-                initialPositionsAndDirections.append( ((rowToCheck, colToCheck), 'West'))
+                initialPositionsAndDirections.append(  PositionAndDirection((rowToCheck, colToCheck), WEST))
 
     return initialPositionsAndDirections
 
@@ -132,20 +139,15 @@ def main():
 
     start = findStart(map)
 
-    initial = initialDirections( start , map)
-
-
-    way1 = initial[0]
-
-    way2 = initial[1]
+    way1, way2 = initialDirections(start , map)
 
     steps = 1
 
-    while way1[0] != way2[0]:
+    while way1.position != way2.position:
         
         # print(f'way 1: {way1}, way 2: {way2}')
-        way1 = nextPosition(way1[0], way1[1], map)
-        way2 = nextPosition(way2[0], way2[1], map)
+        way1 = nextPosition(way1, map)
+        way2 = nextPosition(way2, map)
         steps += 1
 
     print(f'steps: {steps}')
