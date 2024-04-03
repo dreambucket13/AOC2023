@@ -70,7 +70,7 @@ def nextPosition(currentPositionAndDirection: PositionAndDirection, map: list) -
             case '7':
                 newPosition = movePosition(SOUTH, currentPosition)
                 newDirection = SOUTH
-    if moveDirection == WEST:
+    elif moveDirection == WEST:
         match currentPipe:
             case '-':
                 newPosition = movePosition(WEST, currentPosition)
