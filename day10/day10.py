@@ -40,47 +40,37 @@ def nextPosition(currentPositionAndDirection: PositionAndDirection, map: list) -
     if moveDirection == NORTH:
         match currentPipe:
             case '|':
-                newPosition = movePosition(NORTH, currentPosition)
                 newDirection = NORTH
             case '7':
-                newPosition = movePosition(WEST, currentPosition)
                 newDirection = WEST
             case 'F':
-                newPosition = movePosition(EAST, currentPosition)
                 newDirection = EAST
     elif moveDirection == SOUTH:
         match currentPipe:
             case '|':
-                newPosition = movePosition(SOUTH, currentPosition)
                 newDirection = SOUTH
             case 'L':
-                newPosition = movePosition(EAST, currentPosition)
                 newDirection = EAST
             case 'J':
-                newPosition = movePosition(WEST, currentPosition)
                 newDirection = WEST
     elif moveDirection == EAST:
         match currentPipe:
             case '-':
-                newPosition = movePosition(EAST, currentPosition)
                 newDirection = EAST
             case 'J':
-                newPosition = movePosition(NORTH, currentPosition)
                 newDirection = NORTH
             case '7':
-                newPosition = movePosition(SOUTH, currentPosition)
                 newDirection = SOUTH
     elif moveDirection == WEST:
         match currentPipe:
             case '-':
-                newPosition = movePosition(WEST, currentPosition)
                 newDirection = WEST
             case 'L':
-                newPosition = movePosition(NORTH, currentPosition)
                 newDirection = NORTH
             case 'F':
-                newPosition = movePosition(SOUTH, currentPosition)
                 newDirection = SOUTH
+
+    newPosition = movePosition(newDirection, currentPosition)
 
     return PositionAndDirection(newPosition, newDirection)
 
