@@ -115,10 +115,23 @@ def initialDirections(initialPosition: tuple, map: list) -> list:
 
     return initialPositionsAndDirections
 
+def storePipeLocations(location: tuple, pipeLocations: dict):
+    
+    row = location[ROW]
+    col = location[COL]
+
+    if row not in pipeLocations:
+        pipeLocations[row] = [col]
+    else:
+        pipeLocations[row].append(col)
+    
+    return pipeLocations
+    
 
 def main():
 
     map = []
+    pipeLocations = {}
 
     with open('day10/day10_1.txt') as input:
         inputLines = input.readlines()
@@ -129,7 +142,12 @@ def main():
 
     start = findStart(map)
 
+    pipeLocations = storePipeLocations(start, pipeLocations)
+
     way1, way2 = initialDirections(start , map)
+
+    for way in way1, way2:
+        pipeLocations = storePipeLocations(way.position, pipeLocations)
 
     steps = 1
 
@@ -138,9 +156,15 @@ def main():
         # print(f'way 1: {way1}, way 2: {way2}')
         way1 = nextPosition(way1, map)
         way2 = nextPosition(way2, map)
+        for way in way1, way2:
+            pipeLocations = storePipeLocations(way.position, pipeLocations)
         steps += 1
 
     print(f'steps: {steps}')
+
+    #part 2
+
+
 
 if __name__ == '__main__':
     main()
