@@ -220,17 +220,34 @@ def setInteriorVector(positionAndDirection, currentInteriorVector, map):
 
     return interiorVector
 
-def traceRay(location, interiorVector, pipeLocations, interiorTiles):
+def traceRay(location, interiorVector, pipeLocations, interiorTiles, map):
 
     trace = movePosition(interiorVector, location)
 
     while partOfMainLoop(trace, pipeLocations) == False:
-        trace = movePosition(interiorVector, trace)
-        
+
+        if trace[ROW] >= len(map) or trace[ROW] < 0:
+            return interiorTiles
+
+        if trace[COL] >= len(map[0]) or trace[COL] < 0:
+            return interiorTiles
+
         if trace not in interiorTiles:
             interiorTiles.append(trace)
-    
+
+        trace = movePosition(interiorVector, trace)
+        
     return interiorTiles
+
+def vectorToText(vector):
+    if vector == NORTH:
+        return "North"
+    elif vector == SOUTH:
+        return "South"
+    elif vector == EAST:
+        return "East"
+    elif vector == WEST:
+        return "West"
 
 
 def main():
@@ -239,7 +256,7 @@ def main():
     pipeLocations = {}
 
 
-    with open('day10/day10_1.txt') as input:
+    with open('day10/day10_0.txt') as input:
         inputLines = input.readlines()
 
     for line in inputLines:
@@ -281,40 +298,42 @@ def main():
 
     #part 2
 
-    tilesInLoop = 0
-    totalArea = 0
-
-    for position in reversed(pipeLoop2):
-        if position in pipeLoop1:
-            continue
-        pipeLoop1.append(position)
+    interiorTiles = []
 
     #initial interior vector is the direction of the 1st turn
     interiorVector = None
-    priorDirection = pipeLoop1[1].approachDirection
     for position in pipeLoop1[1:]:
         if position.approachDirection != position.exitDirection:
             interiorVector = position.exitDirection
             break
-
-
-
-    interiorTiles = []
-
-
     for position in pipeLoop1[1:]:
 
         #update vector
         interiorVector = setInteriorVector(position, interiorVector, map)
         #fire ray trace in interior direction
-        interiorTiles = traceRay(position.position, interiorVector, pipeLocations, interiorTiles)
+        interiorTiles = traceRay(position.position, interiorVector, pipeLocations, interiorTiles, map)
 
-        print(f'position: {position.position}, pipe: {map[position.position[ROW]][position.position[COL]]} interiorVector: {interiorVector}')
-        pass
+        # print(f'position: {position.position}, pipe: {map[position.position[ROW]][position.position[COL]]} interior: {vectorToText(interiorVector)} approach: {vectorToText(position.approachDirection)} exit: {vectorToText(position.exitDirection)}')
 
-    print(f'tiles in loop: {totalArea - steps*2}')
-        
+    print("loop 2 ----------------")
+    interiorVector = None
+    for position in pipeLoop2[1:]:
+        if position.approachDirection != position.exitDirection:
+            interiorVector = position.exitDirection
+            break
+
+    for position in pipeLoop2[1:-1]:
+
+        #update vector
+        interiorVector = setInteriorVector(position, interiorVector, map)
+        #fire ray trace in interior direction
+        interiorTiles = traceRay(position.position, interiorVector, pipeLocations, interiorTiles, map)
+
+        # print(f'position: {position.position}, pipe: {map[position.position[ROW]][position.position[COL]]} interior: {vectorToText(interiorVector)} approach: {vectorToText(position.approachDirection)} exit: {vectorToText(position.exitDirection)}')        
 
 
+    #3172 is too high
+    print(f'interiorTiles: {interiorTiles}')
+    print(f'num interior tiles: {len(interiorTiles)}')
 if __name__ == '__main__':
     main()
