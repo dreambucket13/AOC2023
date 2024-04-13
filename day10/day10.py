@@ -224,6 +224,8 @@ def traceRay(location, interiorVector, pipeLocations, interiorTiles, map):
 
     trace = movePosition(interiorVector, location)
 
+    pendingInteriorTiles = []
+
     while partOfMainLoop(trace, pipeLocations) == False:
 
         if trace[ROW] >= len(map) or trace[ROW] < 0:
@@ -233,9 +235,12 @@ def traceRay(location, interiorVector, pipeLocations, interiorTiles, map):
             return interiorTiles
 
         if trace not in interiorTiles:
-            interiorTiles.append(trace)
+            pendingInteriorTiles.append(trace)
 
         trace = movePosition(interiorVector, trace)
+
+    for tile in pendingInteriorTiles:
+        interiorTiles.append(tile)
         
     return interiorTiles
 
