@@ -249,12 +249,14 @@ def vectorToText(vector):
     elif vector == WEST:
         return "West"
 
-def printInternalTiles(interiorTiles, map):
+def printInternalTiles(interiorTiles, pipeLocations, map):
 
     for rowIndex, row in enumerate(map):
         for colIndex, col in enumerate(row):
             if (rowIndex,colIndex) in interiorTiles:
                 print("\033[91m{}\033[00m".format(col), end = '')
+            elif partOfMainLoop( (rowIndex, colIndex), pipeLocations):
+                print("\033[92m{}\033[00m".format(col), end = '')
             else:
                 print(col, end = '')
         print('')
@@ -344,6 +346,6 @@ def main():
 
     #3172 is too high
     print(f'num interior tiles: {len(interiorTiles)}')
-    printInternalTiles(interiorTiles, map)
+    printInternalTiles(interiorTiles, pipeLocations, map)
 if __name__ == '__main__':
     main()
