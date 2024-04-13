@@ -6,6 +6,14 @@ NORTH = (-1, 0)
 EAST = (0, 1)
 WEST = (0, -1)
 
+NORTH_EAST = (-1, 1)
+NORTH_WEST = (-1, -1)
+SOUTH_EAST = (1, 1)
+SOUTH_WEST = (1, -1)
+
+#in order clockwise
+DIRECTIONS = (NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST)
+
 ROW = 0
 COL = 1
 
@@ -164,63 +172,81 @@ def partOfMainLoop(location, pipeLocations):
         return True
 
 def rotateCounterClockWise(vector):
-    if vector == NORTH:
-        return WEST
-    elif vector == EAST:
-        return NORTH
-    elif vector == WEST:
-        return SOUTH
-    elif vector == SOUTH:
-        return EAST
+    
+    for index, direction in enumerate(DIRECTIONS):
+        if direction == vector:
+            return DIRECTIONS[index - 1]
 
 def rotateClockWise(vector):
-    if vector == NORTH:
-        return EAST
-    elif vector == EAST:
-        return SOUTH
-    elif vector == WEST:
-        return NORTH
-    elif vector == SOUTH:
-        return WEST
+
+    if vector == NORTH_WEST:
+        return NORTH    
+    
+    for index, direction in enumerate(DIRECTIONS):
+        if direction == vector:
+            return DIRECTIONS[index + 1]
 
 
 def setInteriorVector(positionAndDirection, currentInteriorVector, map):
     
     position =  positionAndDirection.position
-    direction = positionAndDirection.approachDirection
+    approachDirection = positionAndDirection.approachDirection
 
     pipeType = map[position[ROW]][position[COL]]
 
     interiorVector = currentInteriorVector
 
-    if direction == SOUTH:
+    if approachDirection == SOUTH:
         match pipeType:
             case 'J':
                 interiorVector = rotateClockWise(interiorVector)
             case 'L':
                 interiorVector = rotateCounterClockWise(interiorVector)
-    elif direction == WEST:
+            case '|':
+                if interiorVector in (EAST, SOUTH_EAST, NORTH_EAST):
+                    interiorVector = EAST
+                elif interiorVector in (WEST, SOUTH_WEST, NORTH_WEST):
+                    interiorVector = WEST
+    elif approachDirection == WEST:
          match pipeType :
             case 'L':
                 interiorVector = rotateClockWise(interiorVector)   
             case 'F':
                 interiorVector = rotateCounterClockWise(interiorVector)   
-    elif direction == EAST:
+            case '-':
+                if interiorVector in (NORTH_WEST, NORTH, NORTH_EAST):
+                    interiorVector = NORTH
+                elif interiorVector in (SOUTH_WEST, SOUTH, SOUTH_EAST):
+                    interiorVector = SOUTH
+    elif approachDirection == EAST:
          match pipeType :
             case '7':
                 interiorVector = rotateClockWise(interiorVector)   
             case 'J':
-                interiorVector = rotateCounterClockWise(interiorVector) 
-    elif direction == NORTH:
+                interiorVector = rotateCounterClockWise(interiorVector)             
+            case '-':
+                if interiorVector in (NORTH_WEST, NORTH, NORTH_EAST):
+                    interiorVector = NORTH
+                elif interiorVector in (SOUTH_WEST, SOUTH, SOUTH_EAST):
+                    interiorVector = SOUTH
+
+    elif approachDirection == NORTH:
          match pipeType :
             case 'F':
                 interiorVector = rotateClockWise(interiorVector)   
             case '7':
                 interiorVector = rotateCounterClockWise(interiorVector) 
-
+            case '|':
+                if interiorVector in (EAST, SOUTH_EAST, NORTH_EAST):
+                    interiorVector = EAST
+                elif interiorVector in (WEST, SOUTH_WEST, NORTH_WEST):
+                    interiorVector = WEST
     return interiorVector
 
 def traceRay(location, interiorVector, pipeLocations, interiorTiles, map):
+
+    if interiorVector is None:
+        return interiorTiles
 
     trace = movePosition(interiorVector, location)
 
@@ -253,6 +279,14 @@ def vectorToText(vector):
         return "East"
     elif vector == WEST:
         return "West"
+    elif vector == NORTH_WEST:
+        return "North West"
+    elif vector == NORTH_EAST:
+        return "North East"
+    elif vector == SOUTH_WEST:
+        return "South West"    
+    elif vector == SOUTH_EAST:
+        return "South East"
 
 def printInternalTiles(interiorTiles, pipeLocations, map):
 
@@ -350,6 +384,7 @@ def main():
 
 
     #3172 is too high
+    # probably need diagonal interior vectors...
     print(f'num interior tiles: {len(interiorTiles)}')
     printInternalTiles(interiorTiles, pipeLocations, map)
 if __name__ == '__main__':
