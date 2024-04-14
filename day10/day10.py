@@ -80,7 +80,7 @@ def nextPosition(currentPositionAndDirection: PositionAndDirection, map: list) -
             case 'F':
                 newDirection = SOUTH
 
-    return PositionAndDirection(newPosition, moveDirection, newDirection)
+    return PositionAndDirection(newPosition, approachFromExit(moveDirection), newDirection)
 
               
 
@@ -186,11 +186,27 @@ def rotateClockWise(vector):
         if direction == vector:
             return DIRECTIONS[index + 1]
 
+def approachFromExit(exitDirection):
+
+    if exitDirection == EAST:
+        return WEST
+    elif exitDirection == WEST:
+        return EAST
+    elif exitDirection == SOUTH:
+        return NORTH   
+    elif exitDirection == NORTH:
+        return SOUTH 
+    else:
+        return None
+
 
 def setInteriorVector(positionAndDirection, currentInteriorVector, map):
     
+    #when moving north from L to F, the interior vector mirrors, not rotates
+
     position =  positionAndDirection.position
     approachDirection = positionAndDirection.approachDirection
+    exitDirection = positionAndDirection.exitDirection
 
     pipeType = map[position[ROW]][position[COL]]
 
@@ -200,8 +216,16 @@ def setInteriorVector(positionAndDirection, currentInteriorVector, map):
         match pipeType:
             case 'J':
                 interiorVector = rotateClockWise(interiorVector)
+
+                if exitDirection == interiorVector:
+                    interiorVector = rotateClockWise(interiorVector)   
+
             case 'L':
                 interiorVector = rotateCounterClockWise(interiorVector)
+
+                if exitDirection == interiorVector:
+                    interiorVector = rotateCounterClockWise(interiorVector)   
+
             case '|':
                 if interiorVector in (EAST, SOUTH_EAST, NORTH_EAST):
                     interiorVector = EAST
@@ -211,8 +235,16 @@ def setInteriorVector(positionAndDirection, currentInteriorVector, map):
          match pipeType :
             case 'L':
                 interiorVector = rotateClockWise(interiorVector)   
+
+                if exitDirection == interiorVector:
+                    interiorVector = rotateClockWise(interiorVector)   
+
             case 'F':
                 interiorVector = rotateCounterClockWise(interiorVector)   
+
+                if exitDirection == interiorVector:
+                    interiorVector = rotateCounterClockWise(interiorVector)   
+
             case '-':
                 if interiorVector in (NORTH_WEST, NORTH, NORTH_EAST):
                     interiorVector = NORTH
@@ -222,8 +254,16 @@ def setInteriorVector(positionAndDirection, currentInteriorVector, map):
          match pipeType :
             case '7':
                 interiorVector = rotateClockWise(interiorVector)   
+
+                if exitDirection == interiorVector:
+                    interiorVector = rotateClockWise(interiorVector)   
+
             case 'J':
-                interiorVector = rotateCounterClockWise(interiorVector)             
+                interiorVector = rotateCounterClockWise(interiorVector)   
+
+                if exitDirection == interiorVector:
+                    interiorVector = rotateCounterClockWise(interiorVector)   
+
             case '-':
                 if interiorVector in (NORTH_WEST, NORTH, NORTH_EAST):
                     interiorVector = NORTH
@@ -233,9 +273,17 @@ def setInteriorVector(positionAndDirection, currentInteriorVector, map):
     elif approachDirection == NORTH:
          match pipeType :
             case 'F':
-                interiorVector = rotateClockWise(interiorVector)   
+                interiorVector = rotateClockWise(interiorVector) 
+
+                if exitDirection == interiorVector:
+                    interiorVector = rotateClockWise(interiorVector)   
+
             case '7':
                 interiorVector = rotateCounterClockWise(interiorVector) 
+
+                if exitDirection == interiorVector:
+                    interiorVector = rotateCounterClockWise(interiorVector)   
+
             case '|':
                 if interiorVector in (EAST, SOUTH_EAST, NORTH_EAST):
                     interiorVector = EAST
@@ -307,7 +355,7 @@ def main():
     pipeLocations = {}
 
 
-    with open('day10/day10_0.txt') as input:
+    with open('day10/day10_0a.txt') as input:
         inputLines = input.readlines()
 
     for line in inputLines:
@@ -364,7 +412,7 @@ def main():
         #fire ray trace in interior direction
         interiorTiles = traceRay(position.position, interiorVector, pipeLocations, interiorTiles, map)
 
-        # print(f'position: {position.position}, pipe: {map[position.position[ROW]][position.position[COL]]} interior: {vectorToText(interiorVector)} approach: {vectorToText(position.approachDirection)} exit: {vectorToText(position.exitDirection)}')
+        print(f'position: {position.position}, pipe: {map[position.position[ROW]][position.position[COL]]} interior: {vectorToText(interiorVector)} approach: {vectorToText(position.approachDirection)} exit: {vectorToText(position.exitDirection)}')
 
     print("loop 2 ----------------")
     interiorVector = None
@@ -380,11 +428,10 @@ def main():
         #fire ray trace in interior direction
         interiorTiles = traceRay(position.position, interiorVector, pipeLocations, interiorTiles, map)
 
-        # print(f'position: {position.position}, pipe: {map[position.position[ROW]][position.position[COL]]} interior: {vectorToText(interiorVector)} approach: {vectorToText(position.approachDirection)} exit: {vectorToText(position.exitDirection)}')        
+        print(f'position: {position.position}, pipe: {map[position.position[ROW]][position.position[COL]]} interior: {vectorToText(interiorVector)} approach: {vectorToText(position.approachDirection)} exit: {vectorToText(position.exitDirection)}')        
 
 
     #3172 is too high
-    # probably need diagonal interior vectors...
     print(f'num interior tiles: {len(interiorTiles)}')
     printInternalTiles(interiorTiles, pipeLocations, map)
 if __name__ == '__main__':
