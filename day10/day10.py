@@ -24,7 +24,65 @@ class PositionAndDirection:
         self.exitDirection = exitDirection
         self.interiorVector = interiorVector
 
+def approachFromExit(exitDirection):
 
+    if exitDirection == EAST:
+        return WEST
+    elif exitDirection == WEST:
+        return EAST
+    elif exitDirection == SOUTH:
+        return NORTH   
+    elif exitDirection == NORTH:
+        return SOUTH 
+    else:
+        return None
+
+def nextPosition(currentPositionAndDirection: PositionAndDirection, map: list) -> tuple:
+    
+    currentPosition = currentPositionAndDirection.position
+    exitDirection = currentPositionAndDirection.exitDirection
+
+
+    newPosition = movePosition(exitDirection, currentPosition)
+
+    nextPipe = map[newPosition[ROW]][newPosition[COL]]
+    nextApproachDirection = approachFromExit(exitDirection)
+    nextExitDirection = None
+
+    if nextApproachDirection == SOUTH:
+        match nextPipe:
+            case '|':
+                nextExitDirection = NORTH
+            case '7':
+                nextExitDirection = WEST
+            case 'F':
+                nextExitDirection = EAST
+    elif nextApproachDirection == NORTH:
+        match nextPipe:
+            case '|':
+                nextExitDirection = SOUTH
+            case 'L':
+                nextExitDirection = EAST
+            case 'J':
+                nextExitDirection = WEST
+    elif nextApproachDirection == WEST:
+        match nextPipe:
+            case '-':
+                nextExitDirection = EAST
+            case 'J':
+                nextExitDirection = NORTH
+            case '7':
+                nextExitDirection = SOUTH
+    elif nextApproachDirection == EAST:
+        match nextPipe:
+            case '-':
+                nextExitDirection = WEST
+            case 'L':
+                nextExitDirection = NORTH
+            case 'F':
+                nextExitDirection = SOUTH
+
+    return PositionAndDirection(newPosition, approachFromExit(nextApproachDirection), nextExitDirection)
 
 def findStart(map: list) -> tuple:
     for row, line in enumerate(map):
@@ -162,7 +220,7 @@ def main():
     pipeLocations = {}
 
 
-    with open('day10/day10_0b.txt') as input:
+    with open('day10/day10_0c.txt') as input:
         inputLines = input.readlines()
 
     for line in inputLines:
@@ -208,47 +266,5 @@ def main():
 
     interiorTiles = []
 
-    #initial interior vector is the direction of the 1st turn
-    print("loop 1 ----------------")
-    interiorVector = None
-    for position in pipeLoop1:
-        if map[position.position[ROW]][position.position[COL]] in ('L', '7', 'F', 'J'):
-            interiorVector = position.exitDirection
-            break
-    for position in pipeLoop1:
-
-        #update vector
-        interiorVector = setInteriorVector(position, interiorVector, map)
-        position.interiorVector = interiorVector
-        #fire ray trace in interior direction
-        interiorTiles = traceRay(position.position, interiorVector, pipeLocations, interiorTiles, map)
-
-        printInteriorVectors(interiorTiles, pipeLocations, map, pipeLoop1, pipeLoop2)
-        pass
-        # print(f'position: {position.position}, pipe: {map[position.position[ROW]][position.position[COL]]} interior: {vectorToText(interiorVector)} approach: {vectorToText(position.approachDirection)} exit: {vectorToText(position.exitDirection)}')
-
-    print("loop 2 ----------------")
-    interiorVector = None
-    for position in pipeLoop2:
-        if map[position.position[ROW]][position.position[COL]] in ('L', '7', 'F', 'J'):
-            interiorVector = position.exitDirection
-            break
-
-    for position in pipeLoop2:
-
-        #update vector
-        interiorVector = setInteriorVector(position, interiorVector, map)
-        position.interiorVector = interiorVector
-        #fire ray trace in interior direction
-        interiorTiles = traceRay(position.position, interiorVector, pipeLocations, interiorTiles, map)
-        printInteriorVectors(interiorTiles, pipeLocations, map, pipeLoop1, pipeLoop2)
-        pass
-        # print(f'position: {position.position}, pipe: {map[position.position[ROW]][position.position[COL]]} interior: {vectorToText(interiorVector)} approach: {vectorToText(position.approachDirection)} exit: {vectorToText(position.exitDirection)}')        
-
-
-    #3172 is too high
-    print(f'num interior tiles: {len(interiorTiles)}')
-    # printInternalTiles(interiorTiles, pipeLocations, map)
-    printInteriorVectors(interiorTiles, pipeLocations, map, pipeLoop1, pipeLoop2)
 if __name__ == '__main__':
     main()
