@@ -163,11 +163,10 @@ def storePipeLocationsDict(location: tuple, pipeLocations: dict, map):
     
     row = location[ROW]
     col = location[COL]
+    pipe = map[ROW][COL]
 
-    if row not in pipeLocations:
-        pipeLocations[row] = [col]
-    elif col not in pipeLocations[row]:
-        pipeLocations[row].append(col)
+    if (row,col) not in pipeLocations:
+        pipeLocations[(row,col)] = pipe
     
     return pipeLocations
 
@@ -207,20 +206,20 @@ def printInternalTiles(interiorTiles, pipeLocations, map):
         for colIndex, col in enumerate(row):
             if (rowIndex,colIndex) in interiorTiles:
                 print("\033[91m{}\033[00m".format(col), end = '')
-            elif partOfMainLoop( (rowIndex, colIndex), pipeLocations):
+            elif (rowIndex, colIndex) in pipeLocations:
                 print("\033[92m{}\033[00m".format(col), end = '')
             else:
                 print(col, end = '')
         print('')
 
 
-def main():
+def analyzeMaze(file):
 
     map = []
     pipeLocations = {}
 
 
-    with open('day10/day10_0c.txt') as input:
+    with open(file) as input:
         inputLines = input.readlines()
 
     for line in inputLines:
@@ -266,5 +265,43 @@ def main():
 
     interiorTiles = []
 
+    # break tiles into sections?  trace ray for each tile in a section - if any ray hits the boundary it 
+    # invalidates the whole section.
+
+    #also, hitting things like JL, 7F, ||, from the top don't stop the ray.
+
+    for rowIndex, row in enumerate(map):
+        crossings = 0
+        priorPipe = None
+        for colIndex, pipe in enumerate(row):
+        
+
+            if (rowIndex, colIndex) in pipeLocations and pipe not in ('-', 'L', 'J') and is_S_a_crossing(pipe, priorPipe) == True:
+                    crossings += 1
+                    # continue
+            if crossings % 2 == 1 and (rowIndex, colIndex) not in pipeLocations:
+                interiorTiles.append((rowIndex, colIndex))
+    #613 too high
+  
+    printInternalTiles(interiorTiles, pipeLocations, map)
+    print(f'Internal tiles: {len(interiorTiles)}')
+    return len(interiorTiles)
+
+def is_S_a_crossing(pipe, priorPipe):
+
+    if pipe != 'S':
+        return True
+
+    if priorPipe == '-':
+        return False
+    else:
+        return True
+
+
 if __name__ == '__main__':
-    main()
+    assert analyzeMaze('day10/day10_0a.txt') == 4
+    assert analyzeMaze('day10/day10_0b.txt') == 4
+    assert analyzeMaze('day10/day10_0c.txt') == 8
+    assert analyzeMaze('day10/day10_0d.txt') == 10
+
+    analyzeMaze('day10/day10_1.txt')
