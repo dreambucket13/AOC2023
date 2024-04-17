@@ -14,3 +14,9 @@ I was told there would be no math.
 ## Day 8
 
 The key to part 2 is recognizing that the sequences all repeat.  So, finding the least common multiple is where they meet.
+
+## Day 10
+
+- write visual debugging tools with color
+- If the algorithm seems very convoluted, it probably is
+- Still, I am not 100% confident that the solution is general enough.  It passes the tests but I am not quite sure of the L, J logic.

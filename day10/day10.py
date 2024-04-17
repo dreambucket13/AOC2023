@@ -265,17 +265,12 @@ def analyzeMaze(file):
 
     interiorTiles = []
 
-    # break tiles into sections?  trace ray for each tile in a section - if any ray hits the boundary it 
-    # invalidates the whole section.
-
-    #also, hitting things like JL, 7F, ||, from the top don't stop the ray.
-
     for rowIndex, row in enumerate(map):
         crossings = 0
         priorPipe = None
         for colIndex, pipe in enumerate(row):
         
-
+            # still not sure why pipe not in ('-', 'L', 'J') works.  makes sense why L can't start a crossing, but why can't J?
             if (rowIndex, colIndex) in pipeLocations and pipe not in ('-', 'L', 'J') and is_S_a_crossing(pipe, priorPipe) == True:
                     crossings += 1
                     # continue
