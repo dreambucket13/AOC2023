@@ -281,7 +281,9 @@ def analyzeMaze(file):
                     # continue
             if crossings % 2 == 1 and (rowIndex, colIndex) not in pipeLocations:
                 interiorTiles.append((rowIndex, colIndex))
-    #613 too high
+
+            priorPipe = pipe
+    #613 too high.  not 601.  wait fuck it is 601.  WHAT THE FUCK
   
     printInternalTiles(interiorTiles, pipeLocations, map)
     print(f'Internal tiles: {len(interiorTiles)}')
@@ -292,7 +294,7 @@ def is_S_a_crossing(pipe, priorPipe):
     if pipe != 'S':
         return True
 
-    if priorPipe == '-':
+    if priorPipe in ('-', 'L', 'F'):
         return False
     else:
         return True
