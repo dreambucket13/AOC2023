@@ -139,7 +139,7 @@ def part2(file, expansionFactor):
     for galaxy1 in galaxies:
         for galaxy2 in galaxies:
 
-            if galaxy1 == galaxy2 or (galaxy1, galaxy2) in checked:
+            if galaxy1 == galaxy2 or (galaxy1, galaxy2) in checked or (galaxy2, galaxy1) in checked:
                 continue
             
             totalDistance += abs(galaxy2[0]-galaxy1[0]) + abs(galaxy2[1]-galaxy1[1])
@@ -158,4 +158,4 @@ if __name__ == '__main__':
     assert part2('day11\day11_0.txt', 10) == 1030
     assert part2('day11\day11_0.txt', 100) == 8410
 
-    part2('day11/day11_1.txt', 1000000)
+    assert part2('day11/day11_1.txt', 1000000) == 613686987427
