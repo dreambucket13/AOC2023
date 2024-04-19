@@ -278,9 +278,8 @@ def analyzeMaze(file):
                 interiorTiles.append((rowIndex, colIndex))
 
             priorPipe = pipe
-    #613 too high.  not 601.  wait fuck it is 601.  WHAT THE FUCK
   
-    printInternalTiles(interiorTiles, pipeLocations, map)
+    # printInternalTiles(interiorTiles, pipeLocations, map)
     print(f'Internal tiles: {len(interiorTiles)}')
     return len(interiorTiles)
 
@@ -300,5 +299,6 @@ if __name__ == '__main__':
     assert analyzeMaze('day10/day10_0b.txt') == 4
     assert analyzeMaze('day10/day10_0c.txt') == 8
     assert analyzeMaze('day10/day10_0d.txt') == 10
+    assert analyzeMaze('day10/day10_1.txt') == 601
 
-    analyzeMaze('day10/day10_1.txt')
+    assert analyzeMaze('day10/day10_steves.txt') == 305
