@@ -24,7 +24,7 @@ class PositionAndDirection:
         self.exitDirection = exitDirection
         self.interiorVector = interiorVector
 
-def approachFromExit(exitDirection):
+def swapExitAndApproach(exitDirection):
 
     if exitDirection == EAST:
         return WEST
@@ -46,7 +46,7 @@ def nextPosition(currentPositionAndDirection: PositionAndDirection, map: list) -
     newPosition = movePosition(exitDirection, currentPosition)
 
     nextPipe = map[newPosition[ROW]][newPosition[COL]]
-    nextApproachDirection = approachFromExit(exitDirection)
+    nextApproachDirection = swapExitAndApproach(exitDirection)
     nextExitDirection = None
 
     if nextApproachDirection == SOUTH:
@@ -82,7 +82,7 @@ def nextPosition(currentPositionAndDirection: PositionAndDirection, map: list) -
             case 'F':
                 nextExitDirection = SOUTH
 
-    return PositionAndDirection(newPosition, approachFromExit(nextApproachDirection), nextExitDirection)
+    return PositionAndDirection(newPosition, swapExitAndApproach(nextApproachDirection), nextExitDirection)
 
 def findStart(map: list) -> tuple:
     for row, line in enumerate(map):
@@ -212,6 +212,30 @@ def printInternalTiles(interiorTiles, pipeLocations, map):
                 print(col, end = '')
         print('')
 
+def replaceSwithPipe(map, start, initialDirections):
+
+    exitDirectionsFromS = (swapExitAndApproach(initialDirections[0].approachDirection), swapExitAndApproach(initialDirections[1].approachDirection))
+
+    if exitDirectionsFromS == (EAST, WEST) or exitDirectionsFromS == (WEST, EAST):
+        map[start[ROW]][start[COL]] = '-'
+
+    if exitDirectionsFromS == (NORTH, SOUTH) or exitDirectionsFromS == (SOUTH, NORTH):
+        map[start[ROW]][start[COL]] = '|'
+
+    if exitDirectionsFromS == (SOUTH, EAST):
+        map[start[ROW]][start[COL]] = 'F'
+
+    if exitDirectionsFromS == (NORTH, WEST):
+        map[start[ROW]][start[COL]] = '7'
+
+    if exitDirectionsFromS == (NORTH, EAST):
+        map[start[ROW]][start[COL]] = 'L'
+
+    if exitDirectionsFromS == (NORTH, WEST):
+        map[start[ROW]][start[COL]] = 'J'
+
+    return map
+
 
 def analyzeMaze(file):
 
@@ -265,34 +289,39 @@ def analyzeMaze(file):
 
     interiorTiles = []
 
-    for rowIndex, row in enumerate(map):
-        crossings = 0
-        priorPipe = None
-        for colIndex, pipe in enumerate(row):
-        
-            # still not sure why pipe not in ('-', 'L', 'J') works.  makes sense why L can't start a crossing, but why can't J?
-            if (rowIndex, colIndex) in pipeLocations and pipe not in ('-', 'L', 'J') and is_S_a_crossing(pipe, priorPipe) == True:
-                    crossings += 1
-                    # continue
-            if crossings % 2 == 1 and (rowIndex, colIndex) not in pipeLocations:
-                interiorTiles.append((rowIndex, colIndex))
+    way1, way2 = initialDirections(start , map)
+    map = replaceSwithPipe(map, start, (way1, way2))
 
-            priorPipe = pipe
+    for rowIndex, row in enumerate(map):
+        
+        inLoop = False
+        lastTurn = None
+
+        for colIndex, pipe in enumerate(row):
+    
+            if (rowIndex, colIndex) in pipeLocations:
+                if pipe in ('|'):
+                    inLoop = not inLoop
+
+                if pipe in ('7'):
+                    # if last turn was F, that's a U turn, don't toggle the in loop state.
+                    if lastTurn != 'F':
+                        inLoop = not inLoop
+
+                if pipe in ('J'):
+                    # if last turn was L, that's a U turn, don't toggle the in loop state.
+                    if lastTurn != 'L':
+                        inLoop = not inLoop
+                
+                if pipe not in ('-', '|'):
+                    lastTurn = pipe
+
+            if inLoop and (rowIndex, colIndex) not in pipeLocations:
+                interiorTiles.append((rowIndex, colIndex))
   
     # printInternalTiles(interiorTiles, pipeLocations, map)
     print(f'Internal tiles: {len(interiorTiles)}')
     return len(interiorTiles)
-
-def is_S_a_crossing(pipe, priorPipe):
-
-    if pipe != 'S':
-        return True
-
-    if priorPipe in ('-', 'L', 'F'):
-        return False
-    else:
-        return True
-
 
 if __name__ == '__main__':
     assert analyzeMaze('day10/day10_0a.txt') == 4
@@ -302,3 +331,5 @@ if __name__ == '__main__':
     assert analyzeMaze('day10/day10_1.txt') == 601
 
     assert analyzeMaze('day10/day10_steves.txt') == 305
+
+    assert analyzeMaze('day10/day10_0e.txt') == 9
