@@ -23,8 +23,7 @@ class SpringRecord:
                 length = index - start
                 self.questionableSections.append(QuestionableSection(start, length))
 
-def isValidPlacement(conditionRecord, start, damagedSectionlength):
-
+def ifIFitsISits(conditionRecord, start, damagedSectionlength):
 
     foundSectionLength = 0
     index = start
@@ -36,7 +35,6 @@ def isValidPlacement(conditionRecord, start, damagedSectionlength):
         return False
     elif damagedSectionlength < 1:
         return False
-
 
     sectionEnd = False
 
@@ -54,32 +52,88 @@ def isValidPlacement(conditionRecord, start, damagedSectionlength):
             index += 1 
         elif char == '.' or index + 1 >= len(conditionRecord):
             sectionEnd = True
-
-        char = conditionRecord[index]
+        
+        if index < len(conditionRecord):
+            char = conditionRecord[index]
 
     return foundSectionLength == damagedSectionlength
 
-           
-
-def analyzeRecord(springRecord: SpringRecord) -> dict:
-    combinations = 0
+def sectionCanMove(sectionNum, confirmedDamagedSections, damagedSectionLocations, conditionRecord):
+    if sectionNum == len(confirmedDamagedSections) - 1:
+        # last section, limit is the end of the record
+        if damagedSectionLocations[sectionNum] + confirmedDamagedSections[sectionNum] < len(conditionRecord) - 1:
+            return True
+        else:
+            return False
+        
+    else:
+        # limit is the location of the section ahead
+        if damagedSectionLocations[sectionNum] + confirmedDamagedSections[sectionNum] < damagedSectionLocations[sectionNum + 1] - 2:
+            return True
+        else:
+            return False
+        
+def analyzeRecord(springRecord: SpringRecord) -> int:
 
     conditionRecord = springRecord.conditionRecord
-    confirmedDamagedSectionLength  = springRecord.confirmedDamaged[0]
 
-    usedPositions = [[] for damagedSection in springRecord.confirmedDamaged]
+    confirmedDamagedSectionNum = 0
+
+    damagedSectionLocations = [0] * len(springRecord.confirmedDamaged)
 
     index = 0
+
+    # find the 1st possible location for each section
+
+    initializedAllSections = False
+
+    while initializedAllSections == False:
+
+        confirmedDamagedSectionLength  = springRecord.confirmedDamaged[confirmedDamagedSectionNum]
+        doIFits = ifIFitsISits(conditionRecord, index, confirmedDamagedSectionLength)
+
+        if doIFits == False:
+            index += 1
+        else:
+            damagedSectionLocations[confirmedDamagedSectionNum] = index
+            index += 2 #damaged sections can't be next to one another
+
+            if confirmedDamagedSectionNum == len(springRecord.confirmedDamaged) - 1:
+                initializedAllSections = True
+            else:
+                confirmedDamagedSectionNum += 1
+
+    
+    combinations = {}
+    combinations[tuple(damagedSectionLocations)] = True
     foundAllCombinations = False
 
+    while foundAllCombinations == False:
 
+        index = damagedSectionLocations[confirmedDamagedSectionNum]
+        confirmedDamagedSectionLength  = springRecord.confirmedDamaged[confirmedDamagedSectionNum]
 
+        doIFits = ifIFitsISits(conditionRecord, index, confirmedDamagedSectionLength)
+        iCanMove = sectionCanMove(confirmedDamagedSectionNum, springRecord.confirmedDamaged, damagedSectionLocations, conditionRecord )
 
-    # while foundAllCombinations == False:
-    #     pass
+        # yucky one liner...
+        newString = conditionRecord[:index] + ''.join(map(str, ([('@') for char in range(0,confirmedDamagedSectionLength)]))) + (conditionRecord[index + confirmedDamagedSectionLength:])
 
+        # sections that cannot move do not add to the number of combos
+        if doIFits == True and (sectionHasMoved == True or iCanMove == True):
+            combinations += 1
 
-
+        if iCanMove == True:
+            index += 1
+            damagedSectionLocations[confirmedDamagedSectionNum] = index
+            sectionHasMoved = True
+        else: 
+            if confirmedDamagedSectionNum == 0:
+                foundAllCombinations = True
+            else:
+                confirmedDamagedSectionNum -= 1
+                index = damagedSectionLocations[confirmedDamagedSectionNum]
+                sectionHasMoved = False
 
     return combinations
 
@@ -104,19 +158,38 @@ def part1(file):
 
     validCombinations = 0
 
-    assert isValidPlacement('.??..??...?##.', 10, 3) == True
-    assert isValidPlacement('.??..??...?##.', 10, 5) == False
-    assert isValidPlacement('.??..??...?##.', 10, 4) == False
-    assert isValidPlacement('.??..??...?##.', 1, 1) == True
-    assert isValidPlacement('.??..??...?##.', 2, 1) == True
-    assert isValidPlacement('.??..??...?##.', 0, 1) == False
-    assert isValidPlacement('?###????????', 0, 3 ) == False
-    assert isValidPlacement('?###????????', 0, 4 ) == True
+    assert ifIFitsISits('.??..??...?##.', 10, 3) == True
+    assert ifIFitsISits('.??..??...?##.', 10, 5) == False
+    assert ifIFitsISits('.??..??...?##.', 10, 4) == False
+    assert ifIFitsISits('.??..??...?##.', 1, 1) == True
+    assert ifIFitsISits('.??..??...?##.', 2, 1) == True
+    assert ifIFitsISits('.??..??...?##.', 0, 1) == False
+    assert ifIFitsISits('?###????????', 0, 3 ) == False
+    assert ifIFitsISits('?###????????', 0, 4 ) == True
+    assert ifIFitsISits('?#?#?#?#?#?#?#?', 0, 6) == True
+
+    assert sectionCanMove(2, (1,1,3) , (0,2,4) , '???.###') == False
+
+    # ????.#...#... 4,1,1
+    assert sectionCanMove(0, (4,1,1) , (0,5,9) , '????.#...#...') == False
+    assert sectionCanMove(1, (4,1,1) , (0,5,9) , '????.#...#...') == True
+    assert sectionCanMove(2, (4,1,1) , (0,5,9) , '????.#...#...') == True
+    # .??..??...?##. 1,1,3
+    assert sectionCanMove(1, (1,1,3), (1,5,10), '.??..??...?##.') == True
+
+    assert ifIFitsISits('.??..??...?##.',5,1) == True
+    assert ifIFitsISits('.??..??...?##.',6,1) == True
+    assert ifIFitsISits('.??..??...?##.',7,1) == False
+
+
+    # validCombinations += analyzeRecord(springRecords[1])
 
     for springRecord in springRecords:
-        validCombinations += analyzeRecord(springRecord)
+        addedCombinations = analyzeRecord(springRecord)
+        print(f'line combinations: {addedCombinations}')
+        validCombinations += addedCombinations
 
-    
+    print(f'total combinations: {validCombinations}')
 
 if __name__ == '__main__':
     part1('day12\day12_0.txt')
