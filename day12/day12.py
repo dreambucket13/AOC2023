@@ -1,6 +1,6 @@
 # https://adventofcode.com/2023/day/12
 
-class QuestionableSection:
+class UnknownSection:
     def __init__ (self, start, length):
         self.start = start
         self.length = length
@@ -21,7 +21,7 @@ class SpringRecord:
             elif (char != '?' or index == len(conditionRecord)-1) and inSection == True:
                 inSection = False
                 length = index - start
-                self.unknownSections.append(QuestionableSection(start, length))
+                self.unknownSections.append(UnknownSection(start, length))
 
         # find the 1st possible location for each section
         confirmedDamagedSectionNum = 0
@@ -99,50 +99,9 @@ def sectionCanMove(sectionNum, confirmedDamagedSections, damagedSectionLocations
 def newString(conditionRecord, index, confirmedDamagedSectionLength):
     return conditionRecord[:index] + ''.join(map(str, ([('@') for char in range(0,confirmedDamagedSectionLength)]))) + (conditionRecord[index + confirmedDamagedSectionLength:])
         
+def inSameSection(index1, index2, unknownSections) -> bool:
 
-def analyzeRecord(springRecord: SpringRecord) -> int:
-
-    conditionRecord = springRecord.conditionRecord
-
-    damagedSectionLocations = springRecord.damagedSectionLocations
-    confirmedDamagedSectionNum = len(damagedSectionLocations) - 1
-
-    combinations = {}
-    foundAllCombinations = False
-
-    while foundAllCombinations == False:
-
-        index = damagedSectionLocations[confirmedDamagedSectionNum]
-        confirmedDamagedSectionLength  = springRecord.confirmedDamaged[confirmedDamagedSectionNum]
-
-        doIFits = ifIFitsISits(conditionRecord, index, confirmedDamagedSectionLength)
-        iCanMove = sectionCanMove(confirmedDamagedSectionNum, springRecord.confirmedDamaged, damagedSectionLocations, conditionRecord )
-        
-        if doIFits == True and tuple(damagedSectionLocations) not in combinations:
-            combinations[tuple(damagedSectionLocations)] = True
-
-        if iCanMove == True:
-            doIFitsAgain = ifIFitsISits(conditionRecord, index + 1, confirmedDamagedSectionLength)
-            if doIFitsAgain == True:
-                index += 1
-                damagedSectionLocations[confirmedDamagedSectionNum] = index
-            else:
-                if confirmedDamagedSectionNum == 0:
-                    foundAllCombinations = True
-                else:
-                    confirmedDamagedSectionNum -= 1
-                    index = damagedSectionLocations[confirmedDamagedSectionNum]
-        else: 
-            if confirmedDamagedSectionNum == 0:
-                foundAllCombinations = True
-            else:
-                confirmedDamagedSectionNum -= 1
-                index = damagedSectionLocations[confirmedDamagedSectionNum]
-
-    return len(combinations)
-
-def inSameSection(index1, index2, unknownSections):
-
+    #TODO - arbitrary length of indexes to check
     index1Section = None
     index2Section = None
 
@@ -154,78 +113,63 @@ def inSameSection(index1, index2, unknownSections):
 
     return index1Section == index2Section
 
-def spaceAhead(springRecord, damagedSectionLocations ):
+def spaceAhead(springRecord, sectionToCheck ):
 
-    spaceAheadOfSections = []
+    # spaceahead is simply the length of the questioning section minus the length of the section.
+    #assumes only one section is present in the questionable one.
+
+    return springRecord.unknownSections[sectionToCheck] - springRecord.confirmedDamaged[sectionToCheck]
+
+def combinationsInSameSection(damagedSectionsToCheck: list, springRecord: SpringRecord) ->int:
+
+    # assume the list of sections are already in the same unknown area.
+
+    #also assume current combination is already a valid one.
+    combinations = 1 
+    locations = [x for x in springRecord.damagedSectionLocations]
+    lengths = [x for x in springRecord.confirmedDamaged]
+
     conditionRecord = springRecord.conditionRecord
-    damagedSectionLengths = springRecord.confirmedDamaged
-    unknownSections = springRecord.unknownSections
 
-    # space ahead = total space - sum(space occupied by later sections if they are part of contiguous ?? section + 1)
+    # start at last section
+    # move until I hit an end stop
+    # when you do, move prior section up 1 and reset current section to valid spot
+    # if a section cannot move, set current to prior
+    # if you run out of sections, you're done
 
-    damagedSectionNum = len(damagedSectionLengths) - 1
+    foundAllCombinations = False
+    currentSectionId = damagedSectionsToCheck[-1]
+    priorSectionId = currentSectionId - 1
 
-    # assert inSameSection(5,8,unknownSections) == True
-    # assert inSameSection(1,8,unknownSections) == False
-    # assert inSameSection(1,5,unknownSections) == False
+    while foundAllCombinations == False:
 
-    pendingSpaceAhead = 0
+        currentSectionLimit = locations[currentSectionId] + lengths[currentSectionId]
+        priorSectionLimit = locations[priorSectionId] + lengths[priorSectionId]
 
-    while damagedSectionNum >= 0:
-    # sections that start with '#' are locked
-        slot = conditionRecord[damagedSectionLocations[damagedSectionNum]]
-        index = damagedSectionLocations[damagedSectionNum] + damagedSectionLengths[damagedSectionNum]
+        # print(f'curr: {locations[currentSectionId]}, prior: {locations[priorSectionId]}')
 
-        if damagedSectionNum < len(damagedSectionLocations) - 1 and inSameSection(damagedSectionLocations[damagedSectionNum], damagedSectionLocations[damagedSectionNum + 1], unknownSections):
-            subtractedSpace = damagedSectionLengths[damagedSectionNum + 1] + 1
+        # currently only works if last section will hit a wall, i.e. only 2 sections.
+        if currentSectionLimit < len(conditionRecord):
+            locations[currentSectionId] += 1
+            combinations += 1
         else:
-            subtractedSpace = 0
+            # hit end stop
+            if priorSectionLimit < locations[currentSectionId] - 1:
+                locations[priorSectionId] += 1
+                locations[currentSectionId] = priorSectionLimit + 2
+                combinations += 1
+            elif priorSectionId == damagedSectionsToCheck[0]:
+                foundAllCombinations = True
+            else:
+                currentSectionId = priorSectionId
+                priorSectionId = currentSectionId - 1
+        
+    return combinations
 
-        if slot == '#' or index > len(conditionRecord) - 1:
-            spaceConsumed = True
-            spaceAheadOfSections.append(pendingSpaceAhead - subtractedSpace)
-            pendingSpaceAhead = 0
-            damagedSectionNum -= 1
-        else:
 
-            spaceConsumed = False
 
-            while spaceConsumed == False:
-                
-                if index < len(conditionRecord):
-                    slot = conditionRecord[index]
-                else:
-                    spaceConsumed = True
-                    spaceAheadOfSections.append(pendingSpaceAhead - subtractedSpace)
-                    pendingSpaceAhead = 0
-                    damagedSectionNum -= 1
-                    break
 
-                if slot == '?':
-                    pendingSpaceAhead += 1
-                    index += 1
-                else:
-                    spaceConsumed = True
-                    spaceAheadOfSections.append(pendingSpaceAhead - subtractedSpace)
-                    pendingSpaceAhead = 0
-                    damagedSectionNum -= 1
 
-    spaceAheadOfSections.reverse()
-
-    return spaceAheadOfSections
-
-def analyzeRecordMultiplicative(springRecord: SpringRecord) -> int:
-
-    damagedSectionLocations = springRecord.damagedSectionLocations
-
-    additionalCombos = spaceAhead(springRecord, damagedSectionLocations)
-
-    combinations = 1
-    for additionalCombo in additionalCombos:
-        if additionalCombo > 0:
-            combinations *= additionalCombo
-
-    return combinations 
 
 def part1(file):
 
@@ -278,10 +222,7 @@ def part1(file):
 
     # validCombinations += analyzeRecord(springRecords[1])
     
-    validCombinations += analyzeRecordMultiplicative(springRecords[0])
-
-    for springRecord in springRecords:
-        pass
+    validCombinations = combinationsInSameSection([1,2], springRecords[5])
 
     print(f'total combinations: {validCombinations}')
 
